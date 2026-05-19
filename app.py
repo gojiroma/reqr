@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for
-from flask_socketio import SocketIO, emit
+from flask_socketio import SocketIO, emit, join_room
 import qrcode
+import qrcode.image.pil
 import io
 import base64
 import uuid
@@ -27,7 +28,7 @@ def index():
     )
     qr.add_data(url_for('scan', room_id=room_id, _external=True))
     qr.make(fit=True)
-    img = qr.make_image(fill_color="black", back_color="white")
+    img = qr.make_image(image_factory=qrcode.image.pil.PilImage, fill_color="black", back_color="white")
 
     # 画像をBase64に変換
     buffered = io.BytesIO()
