@@ -1,9 +1,0 @@
-services:
-  - type: web
-    name: flask_qr_app
-    runtime: python
-    buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn app:app
-    envVars:
-      - key: FLASK_ENV
-        value: production
