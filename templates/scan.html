@@ -10,23 +10,37 @@
 <body>
     <div style="display: flex; justify-content: center; align-items: center; height: 100vh;">
         <form id="submitForm">
+            <input type="hidden" name="room_id" value="{{ room_id }}">
             <input type="url" id="urlInput" name="url" placeholder="URLを入力してください" required>
             <button type="submit">送信</button>
         </form>
+        <p id="statusMessage" style="margin-top: 16px; text-align: center;"></p>
     </div>
-    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
     <script>
-        const socket = io();
         const roomId = '{{ room_id }}';
         const form = document.getElementById('submitForm');
+        const statusMessage = document.getElementById('statusMessage');
 
-        form.addEventListener('submit', event => {
+        form.addEventListener('submit', async event => {
             event.preventDefault();
             const url = document.getElementById('urlInput').value;
             if (!url) return;
-            socket.emit('submit_url', { room_id: roomId, url });
-            form.querySelector('button').disabled = true;
-            form.querySelector('button').textContent = '送信済み...';
+
+            try {
+                const res = await fetch('/submit', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: new URLSearchParams({ room_id: roomId, url }),
+                });
+                if (res.ok) {
+                    statusMessage.textContent = 'URLを送信しました。QR画面でリダイレクトを待っています。';
+                    form.querySelector('button').disabled = true;
+                } else {
+                    statusMessage.textContent = '送信に失敗しました。もう一度試してください。';
+                }
+            } catch (err) {
+                statusMessage.textContent = 'ネットワークエラーが発生しました。';
+            }
         });
     </script>
 </body>

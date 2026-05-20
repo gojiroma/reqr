@@ -11,16 +11,25 @@
     <div style="display: flex; justify-content: center; align-items: center; height: 100vh;">
         <img src="data:image/png;base64,{{ qr_code }}" alt="QRコード">
     </div>
-    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
     <script>
-        const socket = io();
-        socket.on('connect', () => {
-            socket.emit('join', { room_id: '{{ room_id }}' });
-        });
-        socket.on('redirect', data => {
-            if (data && data.url) {
-                window.location.href = data.url;
+        const roomId = '{{ room_id }}';
+
+        async function checkStatus() {
+            try {
+                const res = await fetch(`/status/${roomId}`);
+                if (!res.ok) return;
+                const data = await res.json();
+                if (data.url) {
+                    window.location.href = data.url;
+                }
+            } catch (err) {
+                console.warn('status check failed', err);
             }
+        }
+
+        window.addEventListener('load', () => {
+            checkStatus();
+            setInterval(checkStatus, 2000);
         });
     </script>
 </body>

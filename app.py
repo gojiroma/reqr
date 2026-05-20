@@ -1,5 +1,4 @@
-from flask import Flask, render_template, url_for
-from flask_socketio import SocketIO, emit, join_room
+from flask import Flask, render_template, request, url_for
 import qrcode
 import qrcode.image.pil
 import io
@@ -8,7 +7,6 @@ import uuid
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your_secret_key_here'
-socketio = SocketIO(app, cors_allowed_origins="*")
 
 # 一時的なルームを管理
 rooms = {}
@@ -41,25 +39,20 @@ def index():
 def scan(room_id):
     return render_template('scan.html', room_id=room_id)
 
-@socketio.on('connect')
-def handle_connect():
-    emit('status', {'message': '接続されました'})
-
-@socketio.on('join')
-def handle_join(data):
-    room_id = data['room_id']
-    if room_id in rooms:
-        rooms[room_id]['connected'] = True
-        join_room(room_id)
-        emit('status', {'message': f'ルーム {room_id} に参加しました'}, room=room_id)
-
-@socketio.on('submit_url')
-def handle_submit_url(data):
-    room_id = data['room_id']
-    url = data['url']
-    if room_id in rooms:
+@app.route('/submit', methods=['POST'])
+def submit_url():
+    room_id = request.form.get('room_id')
+    url = request.form.get('url')
+    if room_id in rooms and url:
         rooms[room_id]['url'] = url
-        emit('redirect', {'url': url}, room=room_id)
+        return {'ok': True}, 200
+    return {'error': 'invalid room or url'}, 400
+
+@app.route('/status/<room_id>')
+def status(room_id):
+    if room_id in rooms and rooms[room_id].get('url'):
+        return {'url': rooms[room_id]['url']}
+    return {'url': None}
 
 if __name__ == '__main__':
-    socketio.run(app, debug=True)
+    app.run(debug=True)
