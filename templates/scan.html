@@ -11,10 +11,12 @@
     <div style="display: flex; justify-content: center; align-items: center; height: 100vh; padding: 16px;">
         <div style="width: 100%; max-width: 420px; text-align: center;">
             <button id="pasteSendBtn"
-                style="width: 100%; aspect-ratio: 1 / 1; border-radius: 50%; border: none; background: #007bff; color: #fff; font-size: 1.15rem; font-weight: bold; padding: 24px; box-shadow: 0 10px 24px rgba(0,0,0,.16);">
+                style="width: 100%; aspect-ratio: 1 / 1; border-radius: 50%; border: none; background: #007bff; color: #fff; font-size: 1.15rem; font-weight: bold; padding: 24px; box-shadow: 0 10px 30px rgba(0, 123, 255, 0.3); cursor: pointer; transition: all 0.3s ease; display: none;"
+                onmouseover="this.style.background='#0056b3'; this.style.boxShadow='0 15px 40px rgba(0, 123, 255, 0.4)';"
+                onmouseout="this.style.background='#007bff'; this.style.boxShadow='0 10px 30px rgba(0, 123, 255, 0.3)';">
                 ペーストして送信
             </button>
-            <p id="statusMessage" style="margin-top: 20px; font-size: 0.95rem; color: #333; line-height: 1.5;"></p>
+            <p id="statusMessage" style="margin-top: 20px; font-size: 3rem; color: #333; line-height: 1.5; font-weight: bold;"></p>
         </div>
     </div>
     <script>
@@ -30,29 +32,53 @@
                     body: new URLSearchParams({ room_id: roomId, url }),
                 });
                 if (res.ok) {
-                    statusMessage.textContent = 'URLを送信しました。QR画面でリダイレクトを待っています。';
+                    statusMessage.textContent = '✓ 送信完了';
+                    statusMessage.style.color = '#28a745';
+                    statusMessage.style.fontSize = '4rem';
                     button.disabled = true;
                     button.textContent = '送信済み';
                 } else {
-                    statusMessage.textContent = '送信に失敗しました。もう一度試してください。';
+                    statusMessage.textContent = '✗ 送信に失敗しました';
+                    statusMessage.style.color = '#dc3545';
+                    statusMessage.style.fontSize = '3rem';
                 }
             } catch (err) {
-                statusMessage.textContent = 'ネットワークエラーが発生しました。';
+                statusMessage.textContent = '✗ ネットワークエラー';
+                statusMessage.style.color = '#dc3545';
+                statusMessage.style.fontSize = '3rem';
             }
         }
 
-        button.addEventListener('click', async () => {
-            statusMessage.textContent = 'クリップボードからURLを読み取っています...';
+        async function autoSendFromClipboard() {
+            statusMessage.textContent = '読み込み中...';
+            statusMessage.style.fontSize = '2rem';
+            statusMessage.style.color = '#666';
             try {
                 const text = await navigator.clipboard.readText();
                 if (!text || !text.startsWith('http')) {
-                    statusMessage.textContent = 'クリップボードにURLが見つかりませんでした。URLをコピーしてから再度押してください。';
+                    statusMessage.textContent = '✗ URLが見つかりません';
+                    statusMessage.style.color = '#dc3545';
+                    statusMessage.style.fontSize = '2.5rem';
+                    button.style.display = 'block';
                     return;
                 }
                 await postUrl(text.trim());
             } catch (err) {
-                statusMessage.textContent = 'クリップボードの読み取りに失敗しました。許可を確認してください。';
+                statusMessage.textContent = '✗ クリップボードエラー';
+                statusMessage.style.color = '#dc3545';
+                statusMessage.style.fontSize = '2.5rem';
+                button.style.display = 'block';
             }
+        }
+
+        // ページ読み込み時に自動で送信開始
+        window.addEventListener('load', () => {
+            autoSendFromClipboard();
+        });
+
+        // ボタンのフォールバック
+        button.addEventListener('click', async () => {
+            autoSendFromClipboard();
         });
     </script>
 </body>
