@@ -24,6 +24,37 @@
         const button = document.getElementById('pasteSendBtn');
         const statusMessage = document.getElementById('statusMessage');
 
+        // 言語判定
+        const isJapanese = navigator.language.startsWith('ja');
+        const messages = {
+            ja: {
+                loading: '読み込み中...',
+                success: '✓ 送信完了',
+                failed: '✗ 送信に失敗しました',
+                networkError: '✗ ネットワークエラー',
+                notFound: '✗ URLが見つかりません',
+                clipboardError: '✗ クリップボードエラー',
+                copyPrompt: 'URLをクリップボード\nにコピーして\nもう一度お試しください',
+                invalidUrl: '✗ 有効なURLではありません\nhttp(s)から始まるURLを\nコピーしてください',
+                manualPaste: 'ペーストして送信',
+                sent: '送信済み'
+            },
+            en: {
+                loading: 'Loading...',
+                success: '✓ Sent successfully',
+                failed: '✗ Failed to send',
+                networkError: '✗ Network error',
+                notFound: '✗ URL not found',
+                clipboardError: '✗ Clipboard error',
+                copyPrompt: 'Copy the URL to\nclipboard and\ntry again',
+                invalidUrl: '✗ Invalid URL\nPlease copy a URL\nstarting with http(s)',
+                manualPaste: 'Paste and send',
+                sent: 'Sent'
+            }
+        };
+
+        const msgs = isJapanese ? messages.ja : messages.en;
+
         async function postUrl(url) {
             try {
                 const res = await fetch('/submit', {
@@ -32,41 +63,56 @@
                     body: new URLSearchParams({ room_id: roomId, url }),
                 });
                 if (res.ok) {
-                    statusMessage.textContent = '✓ 送信完了';
+                    statusMessage.textContent = msgs.success;
                     statusMessage.style.color = '#28a745';
                     statusMessage.style.fontSize = '4rem';
                     button.disabled = true;
-                    button.textContent = '送信済み';
+                    button.textContent = msgs.sent;
                 } else {
-                    statusMessage.textContent = '✗ 送信に失敗しました';
+                    statusMessage.textContent = msgs.failed;
                     statusMessage.style.color = '#dc3545';
                     statusMessage.style.fontSize = '3rem';
                 }
             } catch (err) {
-                statusMessage.textContent = '✗ ネットワークエラー';
+                statusMessage.textContent = msgs.networkError;
                 statusMessage.style.color = '#dc3545';
                 statusMessage.style.fontSize = '3rem';
             }
         }
 
         async function autoSendFromClipboard() {
-            statusMessage.textContent = '読み込み中...';
+            statusMessage.textContent = msgs.loading;
             statusMessage.style.fontSize = '2rem';
             statusMessage.style.color = '#666';
             try {
                 const text = await navigator.clipboard.readText();
-                if (!text || !text.startsWith('http')) {
-                    statusMessage.textContent = '✗ URLが見つかりません';
-                    statusMessage.style.color = '#dc3545';
-                    statusMessage.style.fontSize = '2.5rem';
+                
+                if (!text || text.trim() === '') {
+                    // クリップボードが空
+                    statusMessage.textContent = msgs.copyPrompt;
+                    statusMessage.style.color = '#ff9800';
+                    statusMessage.style.fontSize = '2rem';
                     button.style.display = 'block';
                     return;
                 }
-                await postUrl(text.trim());
+
+                const trimmedText = text.trim();
+                
+                if (!trimmedText.startsWith('http://') && !trimmedText.startsWith('https://')) {
+                    // URLがhttp(s)で始まらない
+                    statusMessage.textContent = msgs.invalidUrl;
+                    statusMessage.style.color = '#ff9800';
+                    statusMessage.style.fontSize = '1.8rem';
+                    button.style.display = 'block';
+                    return;
+                }
+
+                await postUrl(trimmedText);
             } catch (err) {
-                statusMessage.textContent = '✗ クリップボードエラー';
-                statusMessage.style.color = '#dc3545';
-                statusMessage.style.fontSize = '2.5rem';
+                // クリップボード読み取りエラー
+                statusMessage.textContent = msgs.copyPrompt;
+                statusMessage.style.color = '#ff9800';
+                statusMessage.style.fontSize = '2rem';
                 button.style.display = 'block';
             }
         }
