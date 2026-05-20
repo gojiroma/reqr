@@ -8,24 +8,21 @@
 </head>
 
 <body>
-    <div style="display: flex; justify-content: center; align-items: center; height: 100vh;">
-        <form id="submitForm">
-            <input type="hidden" name="room_id" value="{{ room_id }}">
-            <input type="url" id="urlInput" name="url" placeholder="URLを入力してください" required>
-            <button type="submit">送信</button>
-        </form>
-        <p id="statusMessage" style="margin-top: 16px; text-align: center;"></p>
+    <div style="display: flex; justify-content: center; align-items: center; height: 100vh; padding: 16px;">
+        <div style="width: 100%; max-width: 420px; text-align: center;">
+            <button id="pasteSendBtn"
+                style="width: 100%; aspect-ratio: 1 / 1; border-radius: 50%; border: none; background: #007bff; color: #fff; font-size: 1.15rem; font-weight: bold; padding: 24px; box-shadow: 0 10px 24px rgba(0,0,0,.16);">
+                ペーストして送信
+            </button>
+            <p id="statusMessage" style="margin-top: 20px; font-size: 0.95rem; color: #333; line-height: 1.5;"></p>
+        </div>
     </div>
     <script>
         const roomId = '{{ room_id }}';
-        const form = document.getElementById('submitForm');
+        const button = document.getElementById('pasteSendBtn');
         const statusMessage = document.getElementById('statusMessage');
 
-        form.addEventListener('submit', async event => {
-            event.preventDefault();
-            const url = document.getElementById('urlInput').value;
-            if (!url) return;
-
+        async function postUrl(url) {
             try {
                 const res = await fetch('/submit', {
                     method: 'POST',
@@ -34,12 +31,27 @@
                 });
                 if (res.ok) {
                     statusMessage.textContent = 'URLを送信しました。QR画面でリダイレクトを待っています。';
-                    form.querySelector('button').disabled = true;
+                    button.disabled = true;
+                    button.textContent = '送信済み';
                 } else {
                     statusMessage.textContent = '送信に失敗しました。もう一度試してください。';
                 }
             } catch (err) {
                 statusMessage.textContent = 'ネットワークエラーが発生しました。';
+            }
+        }
+
+        button.addEventListener('click', async () => {
+            statusMessage.textContent = 'クリップボードからURLを読み取っています...';
+            try {
+                const text = await navigator.clipboard.readText();
+                if (!text || !text.startsWith('http')) {
+                    statusMessage.textContent = 'クリップボードにURLが見つかりませんでした。URLをコピーしてから再度押してください。';
+                    return;
+                }
+                await postUrl(text.trim());
+            } catch (err) {
+                statusMessage.textContent = 'クリップボードの読み取りに失敗しました。許可を確認してください。';
             }
         });
     </script>
