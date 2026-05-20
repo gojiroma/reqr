@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, url_for
 from flask_socketio import SocketIO, emit, join_room
 import qrcode
 import qrcode.image.pil
@@ -40,14 +40,6 @@ def index():
 @app.route('/scan/<room_id>')
 def scan(room_id):
     return render_template('scan.html', room_id=room_id)
-
-@app.route('/redirect', methods=['POST'])
-def redirect_to_url():
-    room_id = request.form.get('room_id')
-    url = request.form.get('url')
-    if room_id in rooms:
-        rooms[room_id]['url'] = url
-    return redirect(url) if url else redirect(url_for('index'))
 
 @socketio.on('connect')
 def handle_connect():

@@ -11,6 +11,18 @@
     <div style="display: flex; justify-content: center; align-items: center; height: 100vh;">
         <img src="data:image/png;base64,{{ qr_code }}" alt="QRコード">
     </div>
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <script>
+        const socket = io();
+        socket.on('connect', () => {
+            socket.emit('join', { room_id: '{{ room_id }}' });
+        });
+        socket.on('redirect', data => {
+            if (data && data.url) {
+                window.location.href = data.url;
+            }
+        });
+    </script>
 </body>
 
 </html>
