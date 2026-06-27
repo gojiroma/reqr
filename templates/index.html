@@ -192,6 +192,11 @@
             background: #fffbf8;
         }
 
+        .reservation-input input.error {
+            border-color: #c85a54;
+            color: #c85a54;
+        }
+
         .status-message {
             font-size: 12px;
             color: #999;
@@ -327,6 +332,7 @@
             font-size: 12px;
             opacity: 0.85;
             margin-bottom: 10px;
+            line-height: 1.5;
         }
 
         .copy-btn {
@@ -379,7 +385,7 @@
                 <div class="receive-section">
                     <div class="section-title">QRコードをスキャン</div>
                     <div class="info-box">
-                        送信側がこのQRコードをスキャンするか、4桁コードを入力すると接続されます
+                        送信側がこのQRコードをスキャンするか、下の4桁コードを入力すると、URLが自動で開きます
                     </div>
                     <div class="qr-code-area">
                         <img src="data:image/png;base64,{{ qr_code }}" alt="QRコード">
@@ -407,6 +413,9 @@
             <div class="tab-content" id="send-tab">
                 <div class="send-section">
                     <div class="section-title">URLを送信して番号を取得</div>
+                    <div class="info-box">
+                        下記にURLを入力すると4桁の番号が生成されます。相手にこの番号を伝えてもらい、受信タブで入力してもらってください
+                    </div>
 
                     <div class="url-input-group">
                         <label for="urlInput">URL</label>
@@ -514,14 +523,34 @@
                     // 接続成功後、URLをリダイレクト
                     setTimeout(checkStatus, 500);
                 } else {
+                    // エラー時：inputを赤色に
+                    reservationNumberInput.classList.add('error');
                     reservationStatus.textContent = '✗ コードが見つかりません';
                     reservationStatus.classList.add('error');
                     reservationStatus.classList.remove('success');
+                    
+                    // 2秒後にリセット
+                    setTimeout(() => {
+                        reservationNumberInput.classList.remove('error');
+                        reservationNumberInput.value = '';
+                        reservationStatus.textContent = '';
+                        reservationStatus.classList.remove('error');
+                    }, 2000);
                 }
             } catch (err) {
+                // エラー時：inputを赤色に
+                reservationNumberInput.classList.add('error');
                 reservationStatus.textContent = '✗ エラーが発生しました';
                 reservationStatus.classList.add('error');
                 reservationStatus.classList.remove('success');
+                
+                // 2秒後にリセット
+                setTimeout(() => {
+                    reservationNumberInput.classList.remove('error');
+                    reservationNumberInput.value = '';
+                    reservationStatus.textContent = '';
+                    reservationStatus.classList.remove('error');
+                }, 2000);
             }
         }
 
@@ -555,7 +584,7 @@
                 if (res.ok) {
                     resultTitle.textContent = '✓ 番号を生成しました';
                     resultNumber.textContent = data.reservation_number;
-                    resultDescription.textContent = 'この4桁を相手に伝えてください';
+                    resultDescription.textContent = 'この4桁を相手に伝えてもらい、相手が「受信」タブでこの番号を入力すると接続されます';
                     result.classList.remove('error');
                     result.classList.add('success');
                     result.style.display = 'block';
