@@ -14,10 +14,11 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #faf8f6;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
+            color: #3a3a3a;
         }
 
         .container {
@@ -31,43 +32,45 @@
 
         .card {
             background: white;
-            border-radius: 16px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
-            max-width: 500px;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+            max-width: 520px;
             width: 100%;
             overflow: hidden;
+            border: 1px solid #e8e4df;
         }
 
         .tabs {
             display: flex;
-            border-bottom: 2px solid #f0f0f0;
+            border-bottom: 1px solid #e8e4df;
+            background: #fdfbf8;
         }
 
         .tab-btn {
             flex: 1;
-            padding: 16px;
+            padding: 18px;
             border: none;
             background: transparent;
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 600;
             cursor: pointer;
-            color: #999;
+            color: #a89a8f;
             transition: all 0.3s;
             position: relative;
         }
 
         .tab-btn.active {
-            color: #667eea;
+            color: #8b7355;
         }
 
         .tab-btn.active::after {
             content: '';
             position: absolute;
-            bottom: -2px;
+            bottom: -1px;
             left: 0;
             right: 0;
-            height: 2px;
-            background: #667eea;
+            height: 3px;
+            background: #8b7355;
         }
 
         .tab-content {
@@ -96,26 +99,38 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 20px;
+            gap: 24px;
         }
 
-        .receive-label {
-            font-size: 14px;
-            color: #666;
+        .section-title {
+            font-size: 16px;
+            color: #5a5a5a;
             text-align: center;
             font-weight: 600;
         }
 
+        .info-box {
+            width: 100%;
+            background: #faf8f6;
+            padding: 12px;
+            border-radius: 8px;
+            border-left: 3px solid #c9b8a8;
+            font-size: 13px;
+            color: #6b6b6b;
+            line-height: 1.5;
+        }
+
         .qr-code-area {
-            background: #f8f9fa;
-            padding: 20px;
+            background: white;
+            padding: 12px;
             border-radius: 12px;
+            border: 2px solid #e8e4df;
             display: flex;
             justify-content: center;
         }
 
         .qr-code-area img {
-            max-width: 280px;
+            max-width: 260px;
             width: 100%;
             height: auto;
         }
@@ -125,9 +140,8 @@
             display: flex;
             align-items: center;
             gap: 10px;
-            color: #ccc;
-            font-size: 12px;
-            margin: 10px 0;
+            color: #d4ccc0;
+            font-size: 13px;
         }
 
         .divider::before,
@@ -135,7 +149,7 @@
             content: '';
             flex: 1;
             height: 1px;
-            background: #e0e0e0;
+            background: #e8e4df;
         }
 
         .reservation-input {
@@ -145,14 +159,14 @@
             gap: 10px;
             align-items: center;
             padding: 16px;
-            background: #f0f7ff;
-            border-radius: 8px;
-            border: 2px solid #e0e8ff;
+            background: #faf8f6;
+            border-radius: 10px;
+            border: 1px solid #e8e4df;
         }
 
         .reservation-input p {
             font-size: 12px;
-            color: #666;
+            color: #7b7b7b;
             text-align: center;
         }
 
@@ -162,16 +176,20 @@
             font-size: 28px;
             text-align: center;
             letter-spacing: 8px;
-            border: 2px solid #007bff;
+            border: 2px solid #c9b8a8;
             border-radius: 8px;
             font-weight: bold;
             font-family: 'Monaco', 'Courier New', monospace;
+            background: white;
+            color: #3a3a3a;
+            transition: all 0.3s;
         }
 
         .reservation-input input:focus {
             outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            border-color: #8b7355;
+            box-shadow: 0 0 0 3px rgba(139, 115, 85, 0.08);
+            background: #fffbf8;
         }
 
         .status-message {
@@ -182,11 +200,11 @@
         }
 
         .status-message.error {
-            color: #dc3545;
+            color: #c85a54;
         }
 
         .status-message.success {
-            color: #28a745;
+            color: #7a9e6f;
         }
 
         /* 送信タブ */
@@ -196,13 +214,6 @@
             gap: 20px;
         }
 
-        .send-label {
-            font-size: 14px;
-            color: #666;
-            text-align: center;
-            font-weight: 600;
-        }
-
         .url-input-group {
             display: flex;
             flex-direction: column;
@@ -210,24 +221,27 @@
         }
 
         label {
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 600;
-            color: #333;
+            color: #5a5a5a;
         }
 
         input[type="url"] {
             width: 100%;
             padding: 12px;
-            border: 2px solid #e0e0e0;
+            border: 2px solid #e8e4df;
             border-radius: 8px;
-            font-size: 16px;
-            transition: border-color 0.3s;
+            font-size: 15px;
+            background: white;
+            color: #3a3a3a;
+            transition: all 0.3s;
         }
 
         input[type="url"]:focus {
             outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            border-color: #8b7355;
+            box-shadow: 0 0 0 3px rgba(139, 115, 85, 0.08);
+            background: #fffbf8;
         }
 
         .button-group {
@@ -240,66 +254,58 @@
             padding: 12px;
             border: none;
             border-radius: 8px;
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
         }
 
         .btn-primary {
-            background: #667eea;
+            background: #a89a8f;
             color: white;
         }
 
         .btn-primary:hover:not(:disabled) {
-            background: #5568d3;
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+            background: #8b7355;
+            box-shadow: 0 4px 12px rgba(139, 115, 85, 0.2);
         }
 
-        .btn-secondary {
-            background: #f0f0f0;
-            color: #333;
-        }
-
-        .btn-secondary:hover {
-            background: #e0e0e0;
-        }
-
-        .btn:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-        }
-
-        .clipboard-btn {
-            background: #28a745;
+        .btn-clipboard {
+            background: #c9b8a8;
             color: white;
             flex: 1;
         }
 
-        .clipboard-btn:hover:not(:disabled) {
-            background: #218838;
-            box-shadow: 0 4px 12px rgba(40, 167, 69, 0.4);
+        .btn-clipboard:hover:not(:disabled) {
+            background: #a89a8f;
+            box-shadow: 0 4px 12px rgba(169, 154, 143, 0.2);
+        }
+
+        .btn:disabled {
+            background: #ddd4cc;
+            cursor: not-allowed;
+            color: #999;
         }
 
         .result {
             margin-top: 20px;
             padding: 16px;
-            border-radius: 8px;
+            border-radius: 10px;
             text-align: center;
             display: none;
         }
 
         .result.success {
-            background: #d4edda;
-            border: 2px solid #28a745;
-            color: #155724;
+            background: #f0f5ed;
+            border: 2px solid #7a9e6f;
+            color: #4a5f43;
             display: block;
         }
 
         .result.error {
-            background: #f8d7da;
-            border: 2px solid #dc3545;
-            color: #721c24;
+            background: #faf0ed;
+            border: 2px solid #c85a54;
+            color: #7a3a33;
             display: block;
         }
 
@@ -319,7 +325,7 @@
 
         .result-description {
             font-size: 12px;
-            opacity: 0.8;
+            opacity: 0.85;
             margin-bottom: 10px;
         }
 
@@ -335,7 +341,7 @@
         }
 
         .copy-btn:hover {
-            background: rgba(0, 0, 0, 0.1);
+            background: rgba(0, 0, 0, 0.05);
         }
 
         .loading {
@@ -347,8 +353,8 @@
             display: inline-block;
             width: 20px;
             height: 20px;
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #667eea;
+            border: 3px solid #e8e4df;
+            border-top: 3px solid #8b7355;
             border-radius: 50%;
             animation: spin 1s linear infinite;
         }
@@ -356,13 +362,6 @@
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
-        }
-
-        .info-text {
-            font-size: 13px;
-            color: #666;
-            text-align: center;
-            line-height: 1.6;
         }
     </style>
 </head>
@@ -378,8 +377,10 @@
             <!-- 受信タブ -->
             <div class="tab-content active" id="receive-tab">
                 <div class="receive-section">
-                    <div class="receive-label">🔗 QRコードをスキャン</div>
-                    <p class="info-text">送信側がこのページを開いて「送信」タブからURLを送ると、下のQRコードをスキャンした側に自動で接続されます</p>
+                    <div class="section-title">QRコードをスキャン</div>
+                    <div class="info-box">
+                        送信側がこのQRコードをスキャンするか、4桁コードを入力すると接続されます
+                    </div>
                     <div class="qr-code-area">
                         <img src="data:image/png;base64,{{ qr_code }}" alt="QRコード">
                     </div>
@@ -387,7 +388,7 @@
                     <div class="divider">または</div>
 
                     <div class="reservation-input">
-                        <p>予約番号を入力</p>
+                        <p>4桁コードを入力</p>
                         <input 
                             type="text" 
                             id="reservationNumber" 
@@ -405,8 +406,7 @@
             <!-- 送信タブ -->
             <div class="tab-content" id="send-tab">
                 <div class="send-section">
-                    <div class="send-label">📤 URLを送信</div>
-                    <p class="info-text">URLを入力して予約番号を取得。受信側が入力すると接続されます</p>
+                    <div class="section-title">URLを送信して番号を取得</div>
 
                     <div class="url-input-group">
                         <label for="urlInput">URL</label>
@@ -425,8 +425,8 @@
                     </div>
 
                     <div class="button-group">
-                        <button class="btn clipboard-btn" id="clipboardBtn" onclick="sendFromClipboard()">📋 クリップボードから送信</button>
-                        <button class="btn btn-primary" id="submitBtn" onclick="submitUrl()">作成</button>
+                        <button class="btn btn-clipboard" id="clipboardBtn" onclick="sendFromClipboard()">📋 クリップボード</button>
+                        <button class="btn btn-primary" id="submitBtn" onclick="submitUrl()">送信</button>
                     </div>
 
                     <div class="result" id="result">
@@ -514,7 +514,7 @@
                     // 接続成功後、URLをリダイレクト
                     setTimeout(checkStatus, 500);
                 } else {
-                    reservationStatus.textContent = '✗ 予約が見つかりません';
+                    reservationStatus.textContent = '✗ コードが見つかりません';
                     reservationStatus.classList.add('error');
                     reservationStatus.classList.remove('success');
                 }
@@ -553,9 +553,9 @@
                 const data = await res.json();
 
                 if (res.ok) {
-                    resultTitle.textContent = '✓ 予約を作成しました';
+                    resultTitle.textContent = '✓ 番号を生成しました';
                     resultNumber.textContent = data.reservation_number;
-                    resultDescription.textContent = 'この4桁の番号を受信側に伝えてください';
+                    resultDescription.textContent = 'この4桁を相手に伝えてください';
                     result.classList.remove('error');
                     result.classList.add('success');
                     result.style.display = 'block';
@@ -563,7 +563,7 @@
                     copyBtn.textContent = 'コピー';
                 } else {
                     resultTitle.textContent = '✗ エラーが発生しました';
-                    resultDescription.textContent = data.error || '予約の作成に失敗しました';
+                    resultDescription.textContent = data.error || '生成に失敗しました';
                     result.classList.remove('success');
                     result.classList.add('error');
                     result.style.display = 'block';
