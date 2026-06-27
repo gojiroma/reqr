@@ -424,6 +424,51 @@
         }
 
 
+        @media (max-width: 480px) {
+            .container {
+                padding: 5px;
+            }
+
+            .header {
+                display: none;
+            }
+
+            .tab-btn {
+                padding: 12px;
+                font-size: 14px;
+            }
+
+            .tab-content {
+                padding: 15px 12px;
+            }
+
+            .card {
+                border-radius: 12px;
+            }
+
+            .qr-code-area {
+                padding: 6px;
+            }
+
+            .qr-code-area img {
+                max-width: 150px;
+            }
+
+            .receive-section {
+                gap: 10px;
+            }
+
+            .code-input-group {
+                padding: 10px;
+                gap: 6px;
+            }
+
+            .code-input-group input {
+                padding: 6px;
+                font-size: 22px;
+                width: 120px;
+            }
+        }
     </style>
 </head>
 
@@ -431,12 +476,7 @@
 
 
     <div class="container">
-        <div class="header">
-            <div class="app-title">reqr</div>
-            <p class="app-description" id="appDesc">
-                URLを瞬時に共有。QRコードや4桁コードでスマートに受け渡し。
-            </p>
-        </div>
+
 
         <div class="card">
             <div class="tabs">
@@ -449,10 +489,6 @@
             <!-- 受信タブ -->
             <div class="tab-content active" id="receive-tab">
                 <div class="receive-section">
-                    <div class="section-title" id="receiveTitle">QRコードをスキャン</div>
-                    <div class="info-box" id="receiveInfo">
-                        相手が「送信」でURLを送ると、ここのQRコードをスキャンするか、4桁コードを入力することでURLが開きます
-                    </div>
                     <div class="qr-code-area">
                         <img src="data:image/png;base64,{{ qr_code }}" alt="QR Code">
                     </div>
@@ -471,10 +507,6 @@
             <!-- 送信タブ -->
             <div class="tab-content" id="send-tab">
                 <div class="send-section">
-                    <div class="section-title" id="sendTitle">URLを送信</div>
-                    <div class="info-box" id="sendInfo">
-                        URLを入力すると、相手が入力できる4桁のコードが生成されます。このコードを相手に教えてください
-                    </div>
 
                     <div class="url-input-group">
                         <label for="urlInput" id="urlLabel">URL</label>
@@ -514,12 +546,8 @@
                 appDesc: 'URLを瞬時に共有。QRコードや4桁コードでスマートに受け渡し。',
                 tabReceive: '受信',
                 tabSend: '送信',
-                receiveTitle: 'QRコードで受信',
-                receiveInfo: '相手の端末でこのQRコードをスキャンするか、生成された4桁コードを入力してください。',
                 dividerText: 'または',
                 codeInputLabel: '4桁のコードを入力',
-                sendTitle: 'URLを送信',
-                sendInfo: 'URLを入力して1回限りの共有コードを発行します。',
                 urlLabel: 'URL',
                 generatingText: '生成中...',
                 clipboardBtnText: 'クリップボードから',
@@ -548,12 +576,8 @@
                 appDesc: 'Share URLs instantly using a QR code or 4-digit code.',
                 tabReceive: 'Receive',
                 tabSend: 'Send',
-                receiveTitle: 'Scan QR Code',
-                receiveInfo: 'Scan this QR code or enter the 4-digit code to open the URL.',
                 dividerText: 'or',
                 codeInputLabel: 'Enter 4-digit code',
-                sendTitle: 'Send URL',
-                sendInfo: 'Generate a one-time code to share your URL).',
                 urlLabel: 'URL',
                 generatingText: 'Generating...',
                 clipboardBtnText: 'From Clipboard',
@@ -590,12 +614,8 @@
             document.getElementById('appDesc').textContent = t('appDesc');
             document.getElementById('tabReceive').textContent = t('tabReceive');
             document.getElementById('tabSend').textContent = t('tabSend');
-            document.getElementById('receiveTitle').textContent = t('receiveTitle');
-            document.getElementById('receiveInfo').textContent = t('receiveInfo');
             document.getElementById('dividerText').textContent = t('dividerText');
             document.getElementById('codeInputLabel').textContent = t('codeInputLabel');
-            document.getElementById('sendTitle').textContent = t('sendTitle');
-            document.getElementById('sendInfo').textContent = t('sendInfo');
             document.getElementById('urlLabel').textContent = t('urlLabel');
             document.getElementById('generatingText').textContent = t('generatingText');
             document.getElementById('clipboardBtnText').textContent = t('clipboardBtnText');
