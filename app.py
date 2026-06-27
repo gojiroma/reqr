@@ -92,6 +92,7 @@ def apply_reservation():
     url = reservations[reservation_number]
     rooms[room_id]['url'] = url
     rooms[room_id]['reservation_number'] = reservation_number
+    del reservations[reservation_number]
     
     return {'ok': True}, 200
 
