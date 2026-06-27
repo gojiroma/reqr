@@ -611,7 +611,6 @@
         }
 
         function updateTranslations() {
-            document.getElementById('appDesc').textContent = t('appDesc');
             document.getElementById('tabReceive').textContent = t('tabReceive');
             document.getElementById('tabSend').textContent = t('tabSend');
             document.getElementById('dividerText').textContent = t('dividerText');
@@ -643,11 +642,11 @@
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
 
-            event.target.classList.add('active');
+            document.getElementById(tab + 'TabBtn').classList.add('active');
             document.getElementById(tab + '-tab').classList.add('active');
 
             if (tab === 'send') {
-                setTimeout(() => urlInput.focus(), 100);
+                setTimeout(() => document.getElementById('urlInput').focus(), 100);
             }
         }
 
