@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>reqr</title>
+    <title>reqr - Share URLs Instantly</title>
     <style>
         * {
             margin: 0;
@@ -28,6 +28,42 @@
             align-items: center;
             justify-content: center;
             padding: 20px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        .app-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: #8b7355;
+            margin-bottom: 8px;
+        }
+
+        .app-description {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 16px;
+        }
+
+        .app-features {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            font-size: 12px;
+            color: #999;
+        }
+
+        .feature {
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
 
         .card {
@@ -38,6 +74,27 @@
             width: 100%;
             overflow: hidden;
             border: 1px solid #e8e4df;
+            animation: slideUp 0.5s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
         }
 
         .tabs {
@@ -81,17 +138,6 @@
         .tab-content.active {
             display: block;
             animation: fadeIn 0.3s ease-in;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(5px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
         }
 
         /* 受信タブ */
@@ -152,7 +198,7 @@
             background: #e8e4df;
         }
 
-        .reservation-input {
+        .code-input-group {
             width: 100%;
             display: flex;
             flex-direction: column;
@@ -164,13 +210,13 @@
             border: 1px solid #e8e4df;
         }
 
-        .reservation-input p {
+        .code-input-group p {
             font-size: 12px;
             color: #7b7b7b;
             text-align: center;
         }
 
-        .reservation-input input {
+        .code-input-group input {
             width: 140px;
             padding: 12px;
             font-size: 28px;
@@ -185,14 +231,14 @@
             transition: all 0.3s;
         }
 
-        .reservation-input input:focus {
+        .code-input-group input:focus {
             outline: none;
             border-color: #8b7355;
             box-shadow: 0 0 0 3px rgba(139, 115, 85, 0.08);
             background: #fffbf8;
         }
 
-        .reservation-input input.error {
+        .code-input-group input.error {
             border-color: #c85a54;
             color: #c85a54;
         }
@@ -369,32 +415,89 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+
+        .lang-switch {
+            position: fixed;
+            top: 16px;
+            right: 16px;
+            background: white;
+            border: 1px solid #e8e4df;
+            border-radius: 8px;
+            padding: 8px;
+            display: flex;
+            gap: 4px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            z-index: 1000;
+        }
+
+        .lang-btn {
+            background: transparent;
+            border: none;
+            padding: 6px 12px;
+            font-size: 12px;
+            cursor: pointer;
+            border-radius: 4px;
+            color: #a89a8f;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .lang-btn.active {
+            background: #faf8f6;
+            color: #8b7355;
+        }
     </style>
 </head>
 
 <body>
+    <div class="lang-switch">
+        <button class="lang-btn active" onclick="setLanguage('ja')">日本語</button>
+        <button class="lang-btn" onclick="setLanguage('en')">English</button>
+    </div>
+
     <div class="container">
+        <div class="header">
+            <div class="app-title">reqr</div>
+            <p class="app-description" id="appDesc">
+                URLをすばやく共有。QRコードか4桁コードを使って相手に送ります
+            </p>
+            <div class="app-features">
+                <div class="feature">
+                    <span>🔗</span>
+                    <span id="feature1">QRコード共有</span>
+                </div>
+                <div class="feature">
+                    <span>📱</span>
+                    <span id="feature2">4桁コード</span>
+                </div>
+                <div class="feature">
+                    <span>⚡</span>
+                    <span id="feature3">すぐに接続</span>
+                </div>
+            </div>
+        </div>
+
         <div class="card">
             <div class="tabs">
-                <button class="tab-btn active" onclick="switchTab('receive')">📲 受信</button>
-                <button class="tab-btn" onclick="switchTab('send')">📤 送信</button>
+                <button class="tab-btn active" onclick="switchTab('receive')" id="receiveTabBtn">📲 <span id="tabReceive">受信</span></button>
+                <button class="tab-btn" onclick="switchTab('send')" id="sendTabBtn">📤 <span id="tabSend">送信</span></button>
             </div>
 
             <!-- 受信タブ -->
             <div class="tab-content active" id="receive-tab">
                 <div class="receive-section">
-                    <div class="section-title">QRコードをスキャン</div>
-                    <div class="info-box">
-                        送信側がこのQRコードをスキャンするか、下の4桁コードを入力すると、URLが自動で開きます
+                    <div class="section-title" id="receiveTitle">QRコードをスキャン</div>
+                    <div class="info-box" id="receiveInfo">
+                        相手が「送信」でURLを送ると、ここのQRコードをスキャンするか、4桁コードを入力することでURLが開きます
                     </div>
                     <div class="qr-code-area">
-                        <img src="data:image/png;base64,{{ qr_code }}" alt="QRコード">
+                        <img src="data:image/png;base64,{{ qr_code }}" alt="QR Code">
                     </div>
 
-                    <div class="divider">または</div>
+                    <div class="divider" id="dividerText">または</div>
 
-                    <div class="reservation-input">
-                        <p>4桁コードを入力</p>
+                    <div class="code-input-group">
+                        <p id="codeInputLabel">4桁のコードを入力</p>
                         <input 
                             type="text" 
                             id="reservationNumber" 
@@ -412,13 +515,13 @@
             <!-- 送信タブ -->
             <div class="tab-content" id="send-tab">
                 <div class="send-section">
-                    <div class="section-title">URLを送信して番号を取得</div>
-                    <div class="info-box">
-                        下記にURLを入力すると4桁の番号が生成されます。相手にこの番号を伝えてもらい、受信タブで入力してもらってください
+                    <div class="section-title" id="sendTitle">URLを送信</div>
+                    <div class="info-box" id="sendInfo">
+                        URLを入力すると、相手が入力できる4桁のコードが生成されます。このコードを相手に教えてください
                     </div>
 
                     <div class="url-input-group">
-                        <label for="urlInput">URL</label>
+                        <label for="urlInput" id="urlLabel">URL</label>
                         <input 
                             type="url" 
                             id="urlInput" 
@@ -430,19 +533,19 @@
 
                     <div class="loading" id="loading">
                         <div class="spinner"></div>
-                        <p style="margin-top: 10px; color: #666; font-size: 14px;">生成中...</p>
+                        <p style="margin-top: 10px; color: #666; font-size: 14px;" id="generatingText">生成中...</p>
                     </div>
 
                     <div class="button-group">
-                        <button class="btn btn-clipboard" id="clipboardBtn" onclick="sendFromClipboard()">📋 クリップボード</button>
-                        <button class="btn btn-primary" id="submitBtn" onclick="submitUrl()">送信</button>
+                        <button class="btn btn-clipboard" id="clipboardBtn" onclick="sendFromClipboard()">📋 <span id="clipboardBtnText">クリップボード</span></button>
+                        <button class="btn btn-primary" id="submitBtn" onclick="submitUrl()" id="submitBtnText">送信</button>
                     </div>
 
                     <div class="result" id="result">
                         <div class="result-title" id="resultTitle"></div>
                         <div class="result-number" id="resultNumber"></div>
                         <div class="result-description" id="resultDescription"></div>
-                        <button class="copy-btn" id="copyBtn" onclick="copyNumber()">コピー</button>
+                        <button class="copy-btn" id="copyBtn" onclick="copyNumber()" id="copyBtnText">コピー</button>
                     </div>
                 </div>
             </div>
@@ -450,6 +553,125 @@
     </div>
 
     <script>
+        // 言語設定
+        let currentLang = navigator.language.startsWith('ja') ? 'ja' : 'en';
+
+        const translations = {
+            ja: {
+                appDesc: 'URLをすばやく共有。QRコードか4桁コードを使って相手に送ります',
+                feature1: 'QRコード共有',
+                feature2: '4桁コード',
+                feature3: 'すぐに接続',
+                tabReceive: '受信',
+                tabSend: '送信',
+                receiveTitle: 'QRコードをスキャン',
+                receiveInfo: '相手が「送信」でURLを送ると、ここのQRコードをスキャンするか、4桁コードを入力することでURLが開きます',
+                dividerText: 'または',
+                codeInputLabel: '4桁のコードを入力',
+                sendTitle: 'URLを送信',
+                sendInfo: 'URLを入力すると、相手が入力できる4桁のコードが生成されます。このコードを相手に教えてください',
+                urlLabel: 'URL',
+                generatingText: '生成中...',
+                clipboardBtnText: 'クリップボード',
+                submitBtnText: '送信',
+                copyBtnText: 'コピー',
+                codeError: '4桁の番号を入力してください',
+                codeNotFound: 'コードが見つかりません',
+                connectionError: 'エラーが発生しました',
+                connecting: '接続中...',
+                generateSuccess: 'コードを生成しました',
+                generatedDesc: '下のコードを相手に教えてください。相手が「受信」でこのコードを入力すると、URLが開きます',
+                errorOccurred: 'エラーが発生しました',
+                networkError: 'ネットワークエラー',
+                networkErrorDesc: 'サーバーに接続できません',
+                emptyClipboard: 'クリップボードが空です',
+                emptyClipboardDesc: 'URLをコピーしてからお試しください',
+                invalidUrl: '無効なURL',
+                invalidUrlDesc: 'http(s)で始まるURLをコピーしてください',
+                clipboardError: 'クリップボードエラー',
+                clipboardErrorDesc: 'クリップボードを読み取れません',
+                copied: 'コピーしました',
+                urlRequired: 'URLを入力してください',
+                urlFormatError: 'http(s)で始まるURLを入力してください'
+            },
+            en: {
+                appDesc: 'Share URLs instantly. Send to others using QR code or 4-digit code',
+                feature1: 'QR Code',
+                feature2: '4-digit Code',
+                feature3: 'Instant Connect',
+                tabReceive: 'Receive',
+                tabSend: 'Send',
+                receiveTitle: 'Scan QR Code',
+                receiveInfo: 'When the other person sends a URL, scan the QR code below or enter the 4-digit code to open the URL',
+                dividerText: 'or',
+                codeInputLabel: 'Enter 4-digit code',
+                sendTitle: 'Send URL',
+                sendInfo: 'Enter a URL and a 4-digit code will be generated. Share this code with the other person',
+                urlLabel: 'URL',
+                generatingText: 'Generating...',
+                clipboardBtnText: 'From Clipboard',
+                submitBtnText: 'Send',
+                copyBtnText: 'Copy',
+                codeError: 'Please enter a 4-digit code',
+                codeNotFound: 'Code not found',
+                connectionError: 'An error occurred',
+                connecting: 'Connecting...',
+                generateSuccess: 'Code generated',
+                generatedDesc: 'Share the code below with the other person. When they enter this code in "Receive", the URL will open',
+                errorOccurred: 'An error occurred',
+                networkError: 'Network error',
+                networkErrorDesc: 'Could not connect to server',
+                emptyClipboard: 'Clipboard is empty',
+                emptyClipboardDesc: 'Please copy a URL first',
+                invalidUrl: 'Invalid URL',
+                invalidUrlDesc: 'Please copy a URL starting with http(s)',
+                clipboardError: 'Clipboard error',
+                clipboardErrorDesc: 'Could not read clipboard',
+                copied: 'Copied',
+                urlRequired: 'Please enter a URL',
+                urlFormatError: 'Please enter a URL starting with http(s)'
+            }
+        };
+
+        function setLanguage(lang) {
+            currentLang = lang;
+            document.documentElement.lang = lang;
+            
+            // Update active button
+            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            // Update all text
+            updateTranslations();
+        }
+
+        function t(key) {
+            return translations[currentLang][key] || translations['ja'][key];
+        }
+
+        function updateTranslations() {
+            document.getElementById('appDesc').textContent = t('appDesc');
+            document.getElementById('feature1').textContent = t('feature1');
+            document.getElementById('feature2').textContent = t('feature2');
+            document.getElementById('feature3').textContent = t('feature3');
+            document.getElementById('tabReceive').textContent = t('tabReceive');
+            document.getElementById('tabSend').textContent = t('tabSend');
+            document.getElementById('receiveTitle').textContent = t('receiveTitle');
+            document.getElementById('receiveInfo').textContent = t('receiveInfo');
+            document.getElementById('dividerText').textContent = t('dividerText');
+            document.getElementById('codeInputLabel').textContent = t('codeInputLabel');
+            document.getElementById('sendTitle').textContent = t('sendTitle');
+            document.getElementById('sendInfo').textContent = t('sendInfo');
+            document.getElementById('urlLabel').textContent = t('urlLabel');
+            document.getElementById('generatingText').textContent = t('generatingText');
+            document.getElementById('clipboardBtnText').textContent = t('clipboardBtnText');
+            document.getElementById('submitBtnText').textContent = t('submitBtnText');
+            document.getElementById('copyBtnText').textContent = t('copyBtnText');
+        }
+
+        // Initialize translations
+        updateTranslations();
+
         const roomId = '{{ room_id }}';
         const reservationNumberInput = document.getElementById('reservationNumber');
         const reservationStatus = document.getElementById('reservationStatus');
@@ -464,14 +686,12 @@
         const copyBtn = document.getElementById('copyBtn');
 
         function switchTab(tab) {
-            // タブの切り替え
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
             
             event.target.classList.add('active');
             document.getElementById(tab + '-tab').classList.add('active');
 
-            // 送信タブを開いたらURLフォーカス
             if (tab === 'send') {
                 setTimeout(() => urlInput.focus(), 100);
             }
@@ -490,7 +710,6 @@
             }
         }
 
-        // 4桁入力で自動適用
         function handleReservationInput(event) {
             const value = event.target.value;
             if (value.length === 4 && /^\d{4}$/.test(value)) {
@@ -501,7 +720,7 @@
         async function applyReservation() {
             const number = reservationNumberInput.value.trim();
             if (number.length !== 4) {
-                reservationStatus.textContent = '4桁の番号を入力してください';
+                reservationStatus.textContent = t('codeError');
                 reservationStatus.classList.add('error');
                 return;
             }
@@ -517,19 +736,16 @@
                 });
 
                 if (res.ok) {
-                    reservationStatus.textContent = '✓ 接続中...';
+                    reservationStatus.textContent = '✓ ' + t('connecting');
                     reservationStatus.classList.add('success');
                     reservationStatus.classList.remove('error');
-                    // 接続成功後、URLをリダイレクト
                     setTimeout(checkStatus, 500);
                 } else {
-                    // エラー時：inputを赤色に
                     reservationNumberInput.classList.add('error');
-                    reservationStatus.textContent = '✗ コードが見つかりません';
+                    reservationStatus.textContent = '✗ ' + t('codeNotFound');
                     reservationStatus.classList.add('error');
                     reservationStatus.classList.remove('success');
                     
-                    // 2秒後にリセット
                     setTimeout(() => {
                         reservationNumberInput.classList.remove('error');
                         reservationNumberInput.value = '';
@@ -538,13 +754,11 @@
                     }, 2000);
                 }
             } catch (err) {
-                // エラー時：inputを赤色に
                 reservationNumberInput.classList.add('error');
-                reservationStatus.textContent = '✗ エラーが発生しました';
+                reservationStatus.textContent = '✗ ' + t('connectionError');
                 reservationStatus.classList.add('error');
                 reservationStatus.classList.remove('success');
                 
-                // 2秒後にリセット
                 setTimeout(() => {
                     reservationNumberInput.classList.remove('error');
                     reservationNumberInput.value = '';
@@ -558,12 +772,12 @@
             const url = urlInput.value.trim();
 
             if (!url) {
-                alert('URLを入力してください');
+                alert(t('urlRequired'));
                 return;
             }
 
             if (!url.startsWith('http://') && !url.startsWith('https://')) {
-                alert('http(s)で始まるURLを入力してください');
+                alert(t('urlFormatError'));
                 return;
             }
 
@@ -582,24 +796,24 @@
                 const data = await res.json();
 
                 if (res.ok) {
-                    resultTitle.textContent = '✓ 番号を生成しました';
+                    resultTitle.textContent = '✓ ' + t('generateSuccess');
                     resultNumber.textContent = data.reservation_number;
-                    resultDescription.textContent = 'この4桁を相手に伝えてもらい、相手が「受信」タブでこの番号を入力すると接続されます';
+                    resultDescription.textContent = t('generatedDesc');
                     result.classList.remove('error');
                     result.classList.add('success');
                     result.style.display = 'block';
                     urlInput.value = '';
-                    copyBtn.textContent = 'コピー';
+                    copyBtn.textContent = t('copyBtnText');
                 } else {
-                    resultTitle.textContent = '✗ エラーが発生しました';
-                    resultDescription.textContent = data.error || '生成に失敗しました';
+                    resultTitle.textContent = '✗ ' + t('errorOccurred');
+                    resultDescription.textContent = data.error || t('errorOccurred');
                     result.classList.remove('success');
                     result.classList.add('error');
                     result.style.display = 'block';
                 }
             } catch (err) {
-                resultTitle.textContent = '✗ ネットワークエラー';
-                resultDescription.textContent = 'サーバーに接続できません';
+                resultTitle.textContent = '✗ ' + t('networkError');
+                resultDescription.textContent = t('networkErrorDesc');
                 result.classList.remove('success');
                 result.classList.add('error');
                 result.style.display = 'block';
@@ -620,8 +834,8 @@
                 const text = await navigator.clipboard.readText();
                 
                 if (!text || text.trim() === '') {
-                    resultTitle.textContent = '✗ クリップボードが空です';
-                    resultDescription.textContent = 'URLをコピーしてからお試しください';
+                    resultTitle.textContent = '✗ ' + t('emptyClipboard');
+                    resultDescription.textContent = t('emptyClipboardDesc');
                     result.classList.remove('success');
                     result.classList.add('error');
                     result.style.display = 'block';
@@ -631,23 +845,22 @@
                 const url = text.trim();
                 
                 if (!url.startsWith('http://') && !url.startsWith('https://')) {
-                    resultTitle.textContent = '✗ 無効なURL';
-                    resultDescription.textContent = 'http(s)で始まるURLをコピーしてください';
+                    resultTitle.textContent = '✗ ' + t('invalidUrl');
+                    resultDescription.textContent = t('invalidUrlDesc');
                     result.classList.remove('success');
                     result.classList.add('error');
                     result.style.display = 'block';
                     return;
                 }
 
-                // URLを入力欄に設定して送信
                 urlInput.value = url;
                 await new Promise(resolve => {
                     setTimeout(() => submitUrl(), 100);
                     setTimeout(resolve, 1000);
                 });
             } catch (err) {
-                resultTitle.textContent = '✗ クリップボードエラー';
-                resultDescription.textContent = 'クリップボードを読み取れません';
+                resultTitle.textContent = '✗ ' + t('clipboardError');
+                resultDescription.textContent = t('clipboardErrorDesc');
                 result.classList.remove('success');
                 result.classList.add('error');
                 result.style.display = 'block';
@@ -661,23 +874,21 @@
         function copyNumber() {
             const number = resultNumber.textContent;
             navigator.clipboard.writeText(number).then(() => {
-                copyBtn.textContent = '✓ コピーしました';
+                copyBtn.textContent = '✓ ' + t('copied');
                 setTimeout(() => {
-                    copyBtn.textContent = 'コピー';
+                    copyBtn.textContent = t('copyBtnText');
                 }, 2000);
             }).catch(() => {
-                alert('コピーに失敗しました');
+                alert(t('clipboardError'));
             });
         }
 
-        // URLを入力時にEnterで送信
         urlInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
                 submitUrl();
             }
         });
 
-        // 初期チェック
         window.addEventListener('load', () => {
             checkStatus();
             setInterval(checkStatus, 2000);
