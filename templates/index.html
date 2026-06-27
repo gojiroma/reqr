@@ -5,14 +5,150 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>QRコード</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .container {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .qr-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .qr-section img {
+            max-width: 300px;
+            width: 100%;
+            height: auto;
+        }
+
+        .reservation-input {
+            display: none;
+            flex-direction: column;
+            gap: 10px;
+            align-items: center;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        .reservation-input.show {
+            display: flex;
+        }
+
+        .reservation-input p {
+            font-size: 14px;
+            color: #666;
+            text-align: center;
+        }
+
+        .reservation-input input {
+            width: 150px;
+            padding: 12px;
+            font-size: 24px;
+            text-align: center;
+            letter-spacing: 10px;
+            border: 2px solid #007bff;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+
+        .reservation-input button {
+            padding: 10px 30px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .reservation-input button:hover {
+            background: #0056b3;
+        }
+
+        .reservation-input button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .send-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: #28a745;
+            color: white;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-decoration: none;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+
+        .send-button:hover {
+            background: #218838;
+            box-shadow: 0 6px 16px rgba(40, 167, 69, 0.4);
+            transform: scale(1.05);
+        }
+
+        .status-message {
+            font-size: 12px;
+            color: #999;
+            margin-top: 10px;
+            text-align: center;
+        }
+    </style>
 </head>
 
 <body>
-    <div style="display: flex; justify-content: center; align-items: center; height: 100vh;">
-        <img src="data:image/png;base64,{{ qr_code }}" alt="QRコード">
+    <div class="container">
+        <div class="qr-section">
+            <img src="data:image/png;base64,{{ qr_code }}" alt="QRコード">
+            <div class="reservation-input" id="reservationInput">
+                <p>予約番号を入力</p>
+                <input type="text" id="reservationNumber" placeholder="0000" maxlength="4" pattern="[0-9]*" inputmode="numeric">
+                <button onclick="applyReservation()">適用</button>
+                <div class="status-message" id="reservationStatus"></div>
+            </div>
+        </div>
     </div>
+
+    <a href="/send" class="send-button" title="URL送信">📤</a>
+
     <script>
         const roomId = '{{ room_id }}';
+        const reservationInput = document.getElementById('reservationInput');
+        const reservationNumber = document.getElementById('reservationNumber');
+        const reservationStatus = document.getElementById('reservationStatus');
 
         async function checkStatus() {
             try {
@@ -27,7 +163,61 @@
             }
         }
 
+        async function checkReservations() {
+            try {
+                const res = await fetch(`/check_reservation/${roomId}`);
+                if (!res.ok) return;
+                const data = await res.json();
+                if (data.has_reservation) {
+                    reservationInput.classList.add('show');
+                }
+            } catch (err) {
+                console.warn('reservation check failed', err);
+            }
+        }
+
+        async function applyReservation() {
+            const number = reservationNumber.value.trim();
+            if (number.length !== 4) {
+                reservationStatus.textContent = '4桁の番号を入力してください';
+                reservationStatus.style.color = '#dc3545';
+                return;
+            }
+
+            try {
+                const res = await fetch('/apply_reservation', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        room_id: roomId,
+                        reservation_number: number
+                    })
+                });
+
+                if (res.ok) {
+                    reservationStatus.textContent = '✓ 適用しました';
+                    reservationStatus.style.color = '#28a745';
+                    // 適用成功後、statusを再度チェック
+                    setTimeout(checkStatus, 500);
+                } else {
+                    reservationStatus.textContent = '✗ 予約が見つかりません';
+                    reservationStatus.style.color = '#dc3545';
+                }
+            } catch (err) {
+                reservationStatus.textContent = '✗ エラーが発生しました';
+                reservationStatus.style.color = '#dc3545';
+            }
+        }
+
+        // 予約番号入力時にEnterキーで適用
+        reservationNumber.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                applyReservation();
+            }
+        });
+
         window.addEventListener('load', () => {
+            checkReservations();
             checkStatus();
             setInterval(checkStatus, 2000);
         });
