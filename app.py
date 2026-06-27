@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, url_for
+from flask import Flask, render_template, request, url_for, redirect
 import qrcode
 import qrcode.image.pil
 import io
@@ -110,6 +110,16 @@ def check_reservation(room_id):
     # 予約が存在するかどうかを返す
     has_reservation = len(reservations) > 0
     return {'has_reservation': has_reservation}
+
+@app.route('/<reservation_number>')
+def redirect_to_url(reservation_number):
+    """4桁のコードを指定して直接リダイレクト、存在しない場合はエラー画面"""
+    if len(reservation_number) == 4 and reservation_number.isdigit():
+        if reservation_number in reservations:
+            return redirect(reservations[reservation_number])
+        else:
+            return render_template('invalid_code.html', code=reservation_number)
+    return "Not Found", 404
 
 if __name__ == '__main__':
     app.run(debug=True)

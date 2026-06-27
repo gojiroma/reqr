@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>reqr - Code Not Found</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #faf8f6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            color: #3a3a3a;
+        }
+
+        .container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            max-width: 600px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+            max-width: 480px;
+            width: 100%;
+            padding: 40px;
+            border: 1px solid #e8e4df;
+            text-align: center;
+            animation: slideUp 0.5s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .error-icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+            color: #c85a54;
+        }
+
+        .title {
+            font-size: 22px;
+            font-weight: 700;
+            color: #8b7355;
+            margin-bottom: 16px;
+        }
+
+        .code-display {
+            display: inline-block;
+            font-size: 32px;
+            font-weight: bold;
+            letter-spacing: 4px;
+            font-family: 'Monaco', 'Courier New', monospace;
+            background: #faf8f6;
+            border: 2px dashed #c85a54;
+            padding: 10px 24px;
+            border-radius: 10px;
+            color: #c85a54;
+            margin-bottom: 24px;
+        }
+
+        .message {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+
+        .btn {
+            display: inline-block;
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s;
+            background: #a89a8f;
+            color: white;
+        }
+
+        .btn:hover {
+            background: #8b7355;
+            box-shadow: 0 4px 12px rgba(139, 115, 85, 0.2);
+        }
+
+        .lang-switch {
+            position: fixed;
+            top: 16px;
+            right: 16px;
+            background: white;
+            border: 1px solid #e8e4df;
+            border-radius: 8px;
+            padding: 8px;
+            display: flex;
+            gap: 4px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            z-index: 1000;
+        }
+
+        .lang-btn {
+            background: transparent;
+            border: none;
+            padding: 6px 12px;
+            font-size: 12px;
+            cursor: pointer;
+            border-radius: 4px;
+            color: #a89a8f;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .lang-btn.active {
+            background: #faf8f6;
+            color: #8b7355;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="lang-switch">
+        <button class="lang-btn active" id="lang-btn-ja" onclick="setLanguage('ja')">日本語</button>
+        <button class="lang-btn" id="lang-btn-en" onclick="setLanguage('en')">English</button>
+    </div>
+
+    <div class="container">
+        <div class="card">
+            <div class="error-icon">⚠️</div>
+            <div class="title" id="errorTitle">コードが見つかりません</div>
+            
+            <div class="code-display">{{ code }}</div>
+            
+            <div class="message" id="errorMessage">
+                入力されたコードに該当するURLが見つかりません。共有相手にコードをもう一度送ってもらうか、入力したコードが正しいか確認してください。
+            </div>
+            
+            <a href="/" class="btn" id="backBtn">トップページへ戻る</a>
+        </div>
+    </div>
+
+    <script>
+        let currentLang = navigator.language.startsWith('ja') ? 'ja' : 'en';
+
+        const translations = {
+            ja: {
+                title: 'reqr - コードが見つかりません',
+                errorTitle: 'コードが見つかりません',
+                errorMessage: '入力されたコードに該当するURLが見つかりません。共有相手にコードをもう一度送ってもらうか、入力したコードが正しいか確認してください。',
+                backBtn: 'トップページへ戻る'
+            },
+            en: {
+                title: 'reqr - Code Not Found',
+                errorTitle: 'Code Not Found',
+                errorMessage: 'We couldn\'t find any active URL for this code. Please ask the sender to share the code again, or check if the code was entered correctly.',
+                backBtn: 'Back to Home'
+            }
+        };
+
+        function setLanguage(lang) {
+            currentLang = lang;
+            document.documentElement.lang = lang;
+            
+            // UIの切り替え
+            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`lang-btn-${lang}`).classList.add('active');
+
+            // テキストの更新
+            document.title = translations[lang].title;
+            document.getElementById('errorTitle').textContent = translations[lang].errorTitle;
+            document.getElementById('errorMessage').textContent = translations[lang].errorMessage;
+            document.getElementById('backBtn').textContent = translations[lang].backBtn;
+        }
+
+        // 初期ロード時の言語設定
+        window.addEventListener('DOMContentLoaded', () => {
+            setLanguage(currentLang);
+        });
+    </script>
+</body>
+
+</html>

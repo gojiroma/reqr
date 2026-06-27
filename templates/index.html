@@ -82,6 +82,7 @@
                 opacity: 0;
                 transform: translateY(20px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -92,6 +93,7 @@
             from {
                 opacity: 0;
             }
+
             to {
                 opacity: 1;
             }
@@ -412,8 +414,13 @@
         }
 
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
         }
 
         .lang-switch {
@@ -459,28 +466,16 @@
         <div class="header">
             <div class="app-title">reqr</div>
             <p class="app-description" id="appDesc">
-                URLをすばやく共有。QRコードか4桁コードを使って相手に送ります
+                URLを瞬時に共有。QRコードや4桁コードでスマートに受け渡し。
             </p>
-            <div class="app-features">
-                <div class="feature">
-                    <span>🔗</span>
-                    <span id="feature1">QRコード共有</span>
-                </div>
-                <div class="feature">
-                    <span>📱</span>
-                    <span id="feature2">4桁コード</span>
-                </div>
-                <div class="feature">
-                    <span>⚡</span>
-                    <span id="feature3">すぐに接続</span>
-                </div>
-            </div>
         </div>
 
         <div class="card">
             <div class="tabs">
-                <button class="tab-btn active" onclick="switchTab('receive')" id="receiveTabBtn">📲 <span id="tabReceive">受信</span></button>
-                <button class="tab-btn" onclick="switchTab('send')" id="sendTabBtn">📤 <span id="tabSend">送信</span></button>
+                <button class="tab-btn active" onclick="switchTab('receive')" id="receiveTabBtn">📲 <span
+                        id="tabReceive">受信</span></button>
+                <button class="tab-btn" onclick="switchTab('send')" id="sendTabBtn">📤 <span
+                        id="tabSend">送信</span></button>
             </div>
 
             <!-- 受信タブ -->
@@ -498,15 +493,8 @@
 
                     <div class="code-input-group">
                         <p id="codeInputLabel">4桁のコードを入力</p>
-                        <input 
-                            type="text" 
-                            id="reservationNumber" 
-                            placeholder="0000" 
-                            maxlength="4" 
-                            pattern="[0-9]*" 
-                            inputmode="numeric"
-                            onkeyup="handleReservationInput(event)"
-                        >
+                        <input type="text" id="reservationNumber" placeholder="0000" maxlength="4" pattern="[0-9]*"
+                            inputmode="numeric" onkeyup="handleReservationInput(event)">
                         <div class="status-message" id="reservationStatus"></div>
                     </div>
                 </div>
@@ -522,13 +510,7 @@
 
                     <div class="url-input-group">
                         <label for="urlInput" id="urlLabel">URL</label>
-                        <input 
-                            type="url" 
-                            id="urlInput" 
-                            placeholder="https://example.com" 
-                            required
-                            autocomplete="off"
-                        >
+                        <input type="url" id="urlInput" placeholder="https://example.com" required autocomplete="off">
                     </div>
 
                     <div class="loading" id="loading">
@@ -537,15 +519,18 @@
                     </div>
 
                     <div class="button-group">
-                        <button class="btn btn-clipboard" id="clipboardBtn" onclick="sendFromClipboard()">📋 <span id="clipboardBtnText">クリップボード</span></button>
-                        <button class="btn btn-primary" id="submitBtn" onclick="submitUrl()" id="submitBtnText">送信</button>
+                        <button class="btn btn-clipboard" id="clipboardBtn" onclick="sendFromClipboard()">📋 <span
+                                id="clipboardBtnText">クリップボードから</span></button>
+                        <button class="btn btn-primary" id="submitBtn" onclick="submitUrl()"><span
+                                id="submitBtnText">送信</span></button>
                     </div>
 
                     <div class="result" id="result">
                         <div class="result-title" id="resultTitle"></div>
                         <div class="result-number" id="resultNumber"></div>
                         <div class="result-description" id="resultDescription"></div>
-                        <button class="copy-btn" id="copyBtn" onclick="copyNumber()" id="copyBtnText">コピー</button>
+                        <button class="copy-btn" id="copyBtn" onclick="copyNumber()"><span
+                                id="copyBtnText">コピーする</span></button>
                     </div>
                 </div>
             </div>
@@ -558,85 +543,79 @@
 
         const translations = {
             ja: {
-                appDesc: 'URLをすばやく共有。QRコードか4桁コードを使って相手に送ります',
-                feature1: 'QRコード共有',
-                feature2: '4桁コード',
-                feature3: 'すぐに接続',
+                appDesc: 'URLを瞬時に共有。QRコードや4桁コードでスマートに受け渡し。',
                 tabReceive: '受信',
                 tabSend: '送信',
-                receiveTitle: 'QRコードをスキャン',
-                receiveInfo: '相手が「送信」でURLを送ると、ここのQRコードをスキャンするか、4桁コードを入力することでURLが開きます',
+                receiveTitle: 'QRコードで受信',
+                receiveInfo: '相手の端末でこのQRコードをスキャンするか、生成された4桁コードを入力してください。',
                 dividerText: 'または',
                 codeInputLabel: '4桁のコードを入力',
                 sendTitle: 'URLを送信',
-                sendInfo: 'URLを入力すると、相手が入力できる4桁のコードが生成されます。このコードを相手に教えてください',
+                sendInfo: 'URLを入力して1回限りの共有コードを発行します。',
                 urlLabel: 'URL',
                 generatingText: '生成中...',
-                clipboardBtnText: 'クリップボード',
+                clipboardBtnText: 'クリップボードから',
                 submitBtnText: '送信',
-                copyBtnText: 'コピー',
-                codeError: '4桁の番号を入力してください',
-                codeNotFound: 'コードが見つかりません',
-                connectionError: 'エラーが発生しました',
+                copyBtnText: 'コピーする',
+                codeError: '4桁の数字を入力してください',
+                codeNotFound: '無効なコードです',
+                connectionError: '通信エラーが発生しました',
                 connecting: '接続中...',
                 generateSuccess: 'コードを生成しました',
-                generatedDesc: '下のコードを相手に教えてください。相手が「受信」でこのコードを入力すると、URLが開きます',
+                generatedDesc: '1回限りの使い捨てコードです。受信側の端末に入力するとURLが開きます。',
                 errorOccurred: 'エラーが発生しました',
                 networkError: 'ネットワークエラー',
                 networkErrorDesc: 'サーバーに接続できません',
-                emptyClipboard: 'クリップボードが空です',
-                emptyClipboardDesc: 'URLをコピーしてからお試しください',
-                invalidUrl: '無効なURL',
-                invalidUrlDesc: 'http(s)で始まるURLをコピーしてください',
-                clipboardError: 'クリップボードエラー',
-                clipboardErrorDesc: 'クリップボードを読み取れません',
+                emptyClipboard: 'クリップボードにデータがありません',
+                emptyClipboardDesc: 'URLをコピーしてからやり直してください',
+                invalidUrl: '無効なURL形式',
+                invalidUrlDesc: 'http(s)から始まるURLをコピーしてください',
+                clipboardError: '読み取り失敗',
+                clipboardErrorDesc: 'クリップボードへのアクセスを許可してください',
                 copied: 'コピーしました',
-                urlRequired: 'URLを入力してください',
-                urlFormatError: 'http(s)で始まるURLを入力してください'
+                urlRequired: 'URLが未入力です',
+                urlFormatError: 'http(s)から始まるURLを入力してください'
             },
             en: {
-                appDesc: 'Share URLs instantly. Send to others using QR code or 4-digit code',
-                feature1: 'QR Code',
-                feature2: '4-digit Code',
-                feature3: 'Instant Connect',
+                appDesc: 'Share URLs instantly using a QR code or 4-digit code.',
                 tabReceive: 'Receive',
                 tabSend: 'Send',
                 receiveTitle: 'Scan QR Code',
-                receiveInfo: 'When the other person sends a URL, scan the QR code below or enter the 4-digit code to open the URL',
+                receiveInfo: 'Scan this QR code or enter the 4-digit code to open the URL.',
                 dividerText: 'or',
                 codeInputLabel: 'Enter 4-digit code',
                 sendTitle: 'Send URL',
-                sendInfo: 'Enter a URL and a 4-digit code will be generated. Share this code with the other person',
+                sendInfo: 'Generate a one-time code to share your URL).',
                 urlLabel: 'URL',
                 generatingText: 'Generating...',
                 clipboardBtnText: 'From Clipboard',
                 submitBtnText: 'Send',
                 copyBtnText: 'Copy',
-                codeError: 'Please enter a 4-digit code',
-                codeNotFound: 'Code not found',
-                connectionError: 'An error occurred',
+                codeError: 'Enter a 4-digit code',
+                codeNotFound: 'Invalid code',
+                connectionError: 'Connection failed',
                 connecting: 'Connecting...',
                 generateSuccess: 'Code generated',
-                generatedDesc: 'Share the code below with the other person. When they enter this code in "Receive", the URL will open',
+                generatedDesc: 'This is a one-time code. Enter it on the receiving device to open the URL.',
                 errorOccurred: 'An error occurred',
                 networkError: 'Network error',
-                networkErrorDesc: 'Could not connect to server',
+                networkErrorDesc: 'Cannot connect to server',
                 emptyClipboard: 'Clipboard is empty',
                 emptyClipboardDesc: 'Please copy a URL first',
                 invalidUrl: 'Invalid URL',
-                invalidUrlDesc: 'Please copy a URL starting with http(s)',
-                clipboardError: 'Clipboard error',
-                clipboardErrorDesc: 'Could not read clipboard',
+                invalidUrlDesc: 'Copy a URL starting with http(s)',
+                clipboardError: 'Access denied',
+                clipboardErrorDesc: 'Unable to read clipboard',
                 copied: 'Copied',
-                urlRequired: 'Please enter a URL',
-                urlFormatError: 'Please enter a URL starting with http(s)'
+                urlRequired: 'URL is required',
+                urlFormatError: 'URL must start with http(s)'
             }
         };
 
         function setLanguage(lang) {
             currentLang = lang;
             document.documentElement.lang = lang;
-            
+
             // Update active button
             document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
             event.target.classList.add('active');
@@ -651,9 +630,6 @@
 
         function updateTranslations() {
             document.getElementById('appDesc').textContent = t('appDesc');
-            document.getElementById('feature1').textContent = t('feature1');
-            document.getElementById('feature2').textContent = t('feature2');
-            document.getElementById('feature3').textContent = t('feature3');
             document.getElementById('tabReceive').textContent = t('tabReceive');
             document.getElementById('tabSend').textContent = t('tabSend');
             document.getElementById('receiveTitle').textContent = t('receiveTitle');
@@ -688,7 +664,7 @@
         function switchTab(tab) {
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-            
+
             event.target.classList.add('active');
             document.getElementById(tab + '-tab').classList.add('active');
 
@@ -745,7 +721,7 @@
                     reservationStatus.textContent = '✗ ' + t('codeNotFound');
                     reservationStatus.classList.add('error');
                     reservationStatus.classList.remove('success');
-                    
+
                     setTimeout(() => {
                         reservationNumberInput.classList.remove('error');
                         reservationNumberInput.value = '';
@@ -758,7 +734,7 @@
                 reservationStatus.textContent = '✗ ' + t('connectionError');
                 reservationStatus.classList.add('error');
                 reservationStatus.classList.remove('success');
-                
+
                 setTimeout(() => {
                     reservationNumberInput.classList.remove('error');
                     reservationNumberInput.value = '';
@@ -832,7 +808,7 @@
 
             try {
                 const text = await navigator.clipboard.readText();
-                
+
                 if (!text || text.trim() === '') {
                     resultTitle.textContent = '✗ ' + t('emptyClipboard');
                     resultDescription.textContent = t('emptyClipboardDesc');
@@ -843,7 +819,7 @@
                 }
 
                 const url = text.trim();
-                
+
                 if (!url.startsWith('http://') && !url.startsWith('https://')) {
                     resultTitle.textContent = '✗ ' + t('invalidUrl');
                     resultDescription.textContent = t('invalidUrlDesc');

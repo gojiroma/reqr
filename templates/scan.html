@@ -14,7 +14,7 @@
                 style="width: 100%; aspect-ratio: 1 / 1; border-radius: 50%; border: none; background: #007bff; color: #fff; font-size: 1.15rem; font-weight: bold; padding: 24px; box-shadow: 0 10px 30px rgba(0, 123, 255, 0.3); cursor: pointer; transition: all 0.3s ease; display: none;"
                 onmouseover="this.style.background='#0056b3'; this.style.boxShadow='0 15px 40px rgba(0, 123, 255, 0.4)';"
                 onmouseout="this.style.background='#007bff'; this.style.boxShadow='0 10px 30px rgba(0, 123, 255, 0.3)';">
-                ペーストして送信
+                貼り付けて送信
             </button>
             <p id="statusMessage" style="margin-top: 20px; font-size: 3rem; color: #333; line-height: 1.5; font-weight: bold;"></p>
         </div>
@@ -31,12 +31,12 @@
                 loading: '読み込み中...',
                 success: '✓ 送信完了',
                 failed: '✗ 送信に失敗しました',
-                networkError: '✗ ネットワークエラー',
+                networkError: '✗ 通信エラー',
                 notFound: '✗ URLが見つかりません',
-                clipboardError: '✗ クリップボードエラー',
-                copyPrompt: 'URLをクリップボード\nにコピーして\nもう一度お試しください',
-                invalidUrl: '✗ 有効なURLではありません\nhttp(s)から始まるURLを\nコピーしてください',
-                manualPaste: 'ペーストして送信',
+                clipboardError: '✗ 読み取り失敗',
+                copyPrompt: 'URLをコピーして\n再度お試しください',
+                invalidUrl: '✗ 無効なURL形式\nhttp(s)から始まるURLを\nコピーしてください',
+                manualPaste: '貼り付けて送信',
                 sent: '送信済み'
             },
             en: {
@@ -46,8 +46,8 @@
                 networkError: '✗ Network error',
                 notFound: '✗ URL not found',
                 clipboardError: '✗ Clipboard error',
-                copyPrompt: 'Copy the URL to\nclipboard and\ntry again',
-                invalidUrl: '✗ Invalid URL\nPlease copy a URL\nstarting with http(s)',
+                copyPrompt: 'Copy URL and\ntry again',
+                invalidUrl: '✗ Invalid URL format\nCopy a URL starting\nwith http(s)',
                 manualPaste: 'Paste and send',
                 sent: 'Sent'
             }

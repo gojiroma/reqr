@@ -196,7 +196,7 @@
 <body>
     <div class="container">
         <h1>📤 URL送信</h1>
-        <p class="description">URLを入力して予約番号を取得</p>
+        <p class="description">URLを入力して、1回限りの共有コードを発行します（短縮URLではありません）</p>
 
         <div class="form-group">
             <label for="urlInput">URL</label>
@@ -215,7 +215,7 @@
         </div>
 
         <div class="button-group">
-            <button class="submit-btn" id="submitBtn" onclick="submitUrl()">予約を作成</button>
+            <button class="submit-btn" id="submitBtn" onclick="submitUrl()">コードを発行</button>
             <button class="back-btn" onclick="goBack()">戻る</button>
         </div>
 
@@ -264,23 +264,23 @@
                 const data = await res.json();
 
                 if (res.ok) {
-                    resultTitle.textContent = '✓ 予約を作成しました';
+                    resultTitle.textContent = '✓ コードを発行しました';
                     resultNumber.textContent = data.reservation_number;
-                    resultDescription.textContent = 'この番号を相手に伝えてください。QRコード画面で番号を入力すると接続できます。';
+                    resultDescription.textContent = '1回限りの使い捨てコードです。受信側の端末に入力するとURLが開きます。';
                     result.classList.remove('error');
                     result.classList.add('success');
                     result.style.display = 'block';
                     urlInput.value = '';
-                    copyBtn.textContent = '番号をコピー';
+                    copyBtn.textContent = 'コピーする';
                 } else {
                     resultTitle.textContent = '✗ エラーが発生しました';
-                    resultDescription.textContent = data.error || '予約の作成に失敗しました';
+                    resultDescription.textContent = data.error || 'コードの発行に失敗しました';
                     result.classList.remove('success');
                     result.classList.add('error');
                     result.style.display = 'block';
                 }
             } catch (err) {
-                resultTitle.textContent = '✗ ネットワークエラー';
+                resultTitle.textContent = '✗ 通信エラー';
                 resultDescription.textContent = 'サーバーに接続できません。もう一度お試しください。';
                 result.classList.remove('success');
                 result.classList.add('error');
@@ -296,7 +296,7 @@
             navigator.clipboard.writeText(number).then(() => {
                 copyBtn.textContent = '✓ コピーしました';
                 setTimeout(() => {
-                    copyBtn.textContent = '番号をコピー';
+                    copyBtn.textContent = 'コピーする';
                 }, 2000);
             }).catch(() => {
                 alert('コピーに失敗しました');
