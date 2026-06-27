@@ -116,7 +116,9 @@ def redirect_to_url(reservation_number):
     """4桁のコードを指定して直接リダイレクト、存在しない場合はエラー画面"""
     if len(reservation_number) == 4 and reservation_number.isdigit():
         if reservation_number in reservations:
-            return redirect(reservations[reservation_number])
+            url = reservations[reservation_number]
+            del reservations[reservation_number]
+            return redirect(url)
         else:
             return render_template('invalid_code.html', code=reservation_number)
     return "Not Found", 404
