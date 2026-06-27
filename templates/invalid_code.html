@@ -110,44 +110,12 @@
             box-shadow: 0 4px 12px rgba(139, 115, 85, 0.2);
         }
 
-        .lang-switch {
-            position: fixed;
-            top: 16px;
-            right: 16px;
-            background: white;
-            border: 1px solid #e8e4df;
-            border-radius: 8px;
-            padding: 8px;
-            display: flex;
-            gap: 4px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-            z-index: 1000;
-        }
 
-        .lang-btn {
-            background: transparent;
-            border: none;
-            padding: 6px 12px;
-            font-size: 12px;
-            cursor: pointer;
-            border-radius: 4px;
-            color: #a89a8f;
-            font-weight: 600;
-            transition: all 0.2s;
-        }
-
-        .lang-btn.active {
-            background: #faf8f6;
-            color: #8b7355;
-        }
     </style>
 </head>
 
 <body>
-    <div class="lang-switch">
-        <button class="lang-btn active" id="lang-btn-ja" onclick="setLanguage('ja')">日本語</button>
-        <button class="lang-btn" id="lang-btn-en" onclick="setLanguage('en')">English</button>
-    </div>
+
 
     <div class="container">
         <div class="card">
@@ -186,9 +154,7 @@
             currentLang = lang;
             document.documentElement.lang = lang;
             
-            // UIの切り替え
-            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
-            document.getElementById(`lang-btn-${lang}`).classList.add('active');
+
 
             // テキストの更新
             document.title = translations[lang].title;

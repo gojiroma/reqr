@@ -423,44 +423,12 @@
             }
         }
 
-        .lang-switch {
-            position: fixed;
-            top: 16px;
-            right: 16px;
-            background: white;
-            border: 1px solid #e8e4df;
-            border-radius: 8px;
-            padding: 8px;
-            display: flex;
-            gap: 4px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-            z-index: 1000;
-        }
 
-        .lang-btn {
-            background: transparent;
-            border: none;
-            padding: 6px 12px;
-            font-size: 12px;
-            cursor: pointer;
-            border-radius: 4px;
-            color: #a89a8f;
-            font-weight: 600;
-            transition: all 0.2s;
-        }
-
-        .lang-btn.active {
-            background: #faf8f6;
-            color: #8b7355;
-        }
     </style>
 </head>
 
 <body>
-    <div class="lang-switch">
-        <button class="lang-btn active" onclick="setLanguage('ja')">日本語</button>
-        <button class="lang-btn" onclick="setLanguage('en')">English</button>
-    </div>
+
 
     <div class="container">
         <div class="header">
@@ -612,17 +580,7 @@
             }
         };
 
-        function setLanguage(lang) {
-            currentLang = lang;
-            document.documentElement.lang = lang;
 
-            // Update active button
-            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
-
-            // Update all text
-            updateTranslations();
-        }
 
         function t(key) {
             return translations[currentLang][key] || translations['ja'][key];
