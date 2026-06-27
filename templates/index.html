@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QRコード</title>
+    <title>reqr</title>
     <style>
         * {
             margin: 0;
@@ -14,141 +14,459 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
-            position: relative;
         }
 
         .container {
             flex: 1;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
+            justify-content: center;
             padding: 20px;
         }
 
-        .qr-section {
+        .card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+            max-width: 500px;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .tabs {
+            display: flex;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 16px;
+            border: none;
+            background: transparent;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            color: #999;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .tab-btn.active {
+            color: #667eea;
+        }
+
+        .tab-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #667eea;
+        }
+
+        .tab-content {
+            padding: 40px;
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(5px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* 受信タブ */
+        .receive-section {
             display: flex;
             flex-direction: column;
             align-items: center;
             gap: 20px;
         }
 
-        .qr-section img {
-            max-width: 300px;
+        .receive-label {
+            font-size: 14px;
+            color: #666;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .qr-code-area {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .qr-code-area img {
+            max-width: 280px;
             width: 100%;
             height: auto;
         }
 
+        .divider {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #ccc;
+            font-size: 12px;
+            margin: 10px 0;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: #e0e0e0;
+        }
+
         .reservation-input {
-            display: none;
+            width: 100%;
+            display: flex;
             flex-direction: column;
             gap: 10px;
             align-items: center;
-            padding: 20px;
-            background: #f8f9fa;
+            padding: 16px;
+            background: #f0f7ff;
             border-radius: 8px;
-            margin-top: 20px;
-        }
-
-        .reservation-input.show {
-            display: flex;
+            border: 2px solid #e0e8ff;
         }
 
         .reservation-input p {
-            font-size: 14px;
+            font-size: 12px;
             color: #666;
             text-align: center;
         }
 
         .reservation-input input {
-            width: 150px;
+            width: 140px;
             padding: 12px;
-            font-size: 24px;
+            font-size: 28px;
             text-align: center;
-            letter-spacing: 10px;
+            letter-spacing: 8px;
             border: 2px solid #007bff;
             border-radius: 8px;
             font-weight: bold;
+            font-family: 'Monaco', 'Courier New', monospace;
         }
 
-        .reservation-input button {
-            padding: 10px 30px;
-            background: #007bff;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            font-size: 14px;
-            cursor: pointer;
-            font-weight: bold;
-        }
-
-        .reservation-input button:hover {
-            background: #0056b3;
-        }
-
-        .reservation-input button:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-        }
-
-        .send-button {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            background: #28a745;
-            color: white;
-            border: none;
-            font-size: 24px;
-            cursor: pointer;
-            box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            text-decoration: none;
-            transition: all 0.3s;
-            font-weight: bold;
-        }
-
-        .send-button:hover {
-            background: #218838;
-            box-shadow: 0 6px 16px rgba(40, 167, 69, 0.4);
-            transform: scale(1.05);
+        .reservation-input input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
         }
 
         .status-message {
             font-size: 12px;
             color: #999;
-            margin-top: 10px;
             text-align: center;
+            min-height: 18px;
+        }
+
+        .status-message.error {
+            color: #dc3545;
+        }
+
+        .status-message.success {
+            color: #28a745;
+        }
+
+        /* 送信タブ */
+        .send-section {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .send-label {
+            font-size: 14px;
+            color: #666;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .url-input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        input[type="url"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        input[type="url"]:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: #5568d3;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .clipboard-btn {
+            background: #28a745;
+            color: white;
+            flex: 1;
+        }
+
+        .clipboard-btn:hover:not(:disabled) {
+            background: #218838;
+            box-shadow: 0 4px 12px rgba(40, 167, 69, 0.4);
+        }
+
+        .result {
+            margin-top: 20px;
+            padding: 16px;
+            border-radius: 8px;
+            text-align: center;
+            display: none;
+        }
+
+        .result.success {
+            background: #d4edda;
+            border: 2px solid #28a745;
+            color: #155724;
+            display: block;
+        }
+
+        .result.error {
+            background: #f8d7da;
+            border: 2px solid #dc3545;
+            color: #721c24;
+            display: block;
+        }
+
+        .result-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .result-number {
+            font-size: 32px;
+            font-weight: bold;
+            letter-spacing: 4px;
+            font-family: 'Monaco', 'Courier New', monospace;
+            margin-bottom: 8px;
+        }
+
+        .result-description {
+            font-size: 12px;
+            opacity: 0.8;
+            margin-bottom: 10px;
+        }
+
+        .copy-btn {
+            background: transparent;
+            color: inherit;
+            border: 1px solid currentColor;
+            padding: 6px 14px;
+            font-size: 12px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.3s;
+        }
+
+        .copy-btn:hover {
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .info-text {
+            font-size: 13px;
+            color: #666;
+            text-align: center;
+            line-height: 1.6;
         }
     </style>
 </head>
 
 <body>
     <div class="container">
-        <div class="qr-section">
-            <img src="data:image/png;base64,{{ qr_code }}" alt="QRコード">
-            <div class="reservation-input" id="reservationInput">
-                <p>予約番号を入力</p>
-                <input type="text" id="reservationNumber" placeholder="0000" maxlength="4" pattern="[0-9]*" inputmode="numeric">
-                <button onclick="applyReservation()">適用</button>
-                <div class="status-message" id="reservationStatus"></div>
+        <div class="card">
+            <div class="tabs">
+                <button class="tab-btn active" onclick="switchTab('receive')">📲 受信</button>
+                <button class="tab-btn" onclick="switchTab('send')">📤 送信</button>
+            </div>
+
+            <!-- 受信タブ -->
+            <div class="tab-content active" id="receive-tab">
+                <div class="receive-section">
+                    <div class="receive-label">🔗 QRコードをスキャン</div>
+                    <p class="info-text">送信側がこのページを開いて「送信」タブからURLを送ると、下のQRコードをスキャンした側に自動で接続されます</p>
+                    <div class="qr-code-area">
+                        <img src="data:image/png;base64,{{ qr_code }}" alt="QRコード">
+                    </div>
+
+                    <div class="divider">または</div>
+
+                    <div class="reservation-input">
+                        <p>予約番号を入力</p>
+                        <input 
+                            type="text" 
+                            id="reservationNumber" 
+                            placeholder="0000" 
+                            maxlength="4" 
+                            pattern="[0-9]*" 
+                            inputmode="numeric"
+                            onkeyup="handleReservationInput(event)"
+                        >
+                        <div class="status-message" id="reservationStatus"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 送信タブ -->
+            <div class="tab-content" id="send-tab">
+                <div class="send-section">
+                    <div class="send-label">📤 URLを送信</div>
+                    <p class="info-text">URLを入力して予約番号を取得。受信側が入力すると接続されます</p>
+
+                    <div class="url-input-group">
+                        <label for="urlInput">URL</label>
+                        <input 
+                            type="url" 
+                            id="urlInput" 
+                            placeholder="https://example.com" 
+                            required
+                            autocomplete="off"
+                        >
+                    </div>
+
+                    <div class="loading" id="loading">
+                        <div class="spinner"></div>
+                        <p style="margin-top: 10px; color: #666; font-size: 14px;">生成中...</p>
+                    </div>
+
+                    <div class="button-group">
+                        <button class="btn clipboard-btn" id="clipboardBtn" onclick="sendFromClipboard()">📋 クリップボードから送信</button>
+                        <button class="btn btn-primary" id="submitBtn" onclick="submitUrl()">作成</button>
+                    </div>
+
+                    <div class="result" id="result">
+                        <div class="result-title" id="resultTitle"></div>
+                        <div class="result-number" id="resultNumber"></div>
+                        <div class="result-description" id="resultDescription"></div>
+                        <button class="copy-btn" id="copyBtn" onclick="copyNumber()">コピー</button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
-    <a href="/send" class="send-button" title="URL送信">📤</a>
-
     <script>
         const roomId = '{{ room_id }}';
-        const reservationInput = document.getElementById('reservationInput');
-        const reservationNumber = document.getElementById('reservationNumber');
+        const reservationNumberInput = document.getElementById('reservationNumber');
         const reservationStatus = document.getElementById('reservationStatus');
+        const urlInput = document.getElementById('urlInput');
+        const submitBtn = document.getElementById('submitBtn');
+        const clipboardBtn = document.getElementById('clipboardBtn');
+        const result = document.getElementById('result');
+        const resultTitle = document.getElementById('resultTitle');
+        const resultNumber = document.getElementById('resultNumber');
+        const resultDescription = document.getElementById('resultDescription');
+        const loading = document.getElementById('loading');
+        const copyBtn = document.getElementById('copyBtn');
+
+        function switchTab(tab) {
+            // タブの切り替え
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(tab + '-tab').classList.add('active');
+
+            // 送信タブを開いたらURLフォーカス
+            if (tab === 'send') {
+                setTimeout(() => urlInput.focus(), 100);
+            }
+        }
 
         async function checkStatus() {
             try {
@@ -163,24 +481,19 @@
             }
         }
 
-        async function checkReservations() {
-            try {
-                const res = await fetch(`/check_reservation/${roomId}`);
-                if (!res.ok) return;
-                const data = await res.json();
-                if (data.has_reservation) {
-                    reservationInput.classList.add('show');
-                }
-            } catch (err) {
-                console.warn('reservation check failed', err);
+        // 4桁入力で自動適用
+        function handleReservationInput(event) {
+            const value = event.target.value;
+            if (value.length === 4 && /^\d{4}$/.test(value)) {
+                applyReservation();
             }
         }
 
         async function applyReservation() {
-            const number = reservationNumber.value.trim();
+            const number = reservationNumberInput.value.trim();
             if (number.length !== 4) {
                 reservationStatus.textContent = '4桁の番号を入力してください';
-                reservationStatus.style.color = '#dc3545';
+                reservationStatus.classList.add('error');
                 return;
             }
 
@@ -195,29 +508,148 @@
                 });
 
                 if (res.ok) {
-                    reservationStatus.textContent = '✓ 適用しました';
-                    reservationStatus.style.color = '#28a745';
-                    // 適用成功後、statusを再度チェック
+                    reservationStatus.textContent = '✓ 接続中...';
+                    reservationStatus.classList.add('success');
+                    reservationStatus.classList.remove('error');
+                    // 接続成功後、URLをリダイレクト
                     setTimeout(checkStatus, 500);
                 } else {
                     reservationStatus.textContent = '✗ 予約が見つかりません';
-                    reservationStatus.style.color = '#dc3545';
+                    reservationStatus.classList.add('error');
+                    reservationStatus.classList.remove('success');
                 }
             } catch (err) {
                 reservationStatus.textContent = '✗ エラーが発生しました';
-                reservationStatus.style.color = '#dc3545';
+                reservationStatus.classList.add('error');
+                reservationStatus.classList.remove('success');
             }
         }
 
-        // 予約番号入力時にEnterキーで適用
-        reservationNumber.addEventListener('keypress', (e) => {
+        async function submitUrl() {
+            const url = urlInput.value.trim();
+
+            if (!url) {
+                alert('URLを入力してください');
+                return;
+            }
+
+            if (!url.startsWith('http://') && !url.startsWith('https://')) {
+                alert('http(s)で始まるURLを入力してください');
+                return;
+            }
+
+            submitBtn.disabled = true;
+            clipboardBtn.disabled = true;
+            loading.style.display = 'block';
+            result.style.display = 'none';
+
+            try {
+                const res = await fetch('/create_reservation', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ url })
+                });
+
+                const data = await res.json();
+
+                if (res.ok) {
+                    resultTitle.textContent = '✓ 予約を作成しました';
+                    resultNumber.textContent = data.reservation_number;
+                    resultDescription.textContent = 'この4桁の番号を受信側に伝えてください';
+                    result.classList.remove('error');
+                    result.classList.add('success');
+                    result.style.display = 'block';
+                    urlInput.value = '';
+                    copyBtn.textContent = 'コピー';
+                } else {
+                    resultTitle.textContent = '✗ エラーが発生しました';
+                    resultDescription.textContent = data.error || '予約の作成に失敗しました';
+                    result.classList.remove('success');
+                    result.classList.add('error');
+                    result.style.display = 'block';
+                }
+            } catch (err) {
+                resultTitle.textContent = '✗ ネットワークエラー';
+                resultDescription.textContent = 'サーバーに接続できません';
+                result.classList.remove('success');
+                result.classList.add('error');
+                result.style.display = 'block';
+            } finally {
+                submitBtn.disabled = false;
+                clipboardBtn.disabled = false;
+                loading.style.display = 'none';
+            }
+        }
+
+        async function sendFromClipboard() {
+            clipboardBtn.disabled = true;
+            submitBtn.disabled = true;
+            loading.style.display = 'block';
+            result.style.display = 'none';
+
+            try {
+                const text = await navigator.clipboard.readText();
+                
+                if (!text || text.trim() === '') {
+                    resultTitle.textContent = '✗ クリップボードが空です';
+                    resultDescription.textContent = 'URLをコピーしてからお試しください';
+                    result.classList.remove('success');
+                    result.classList.add('error');
+                    result.style.display = 'block';
+                    return;
+                }
+
+                const url = text.trim();
+                
+                if (!url.startsWith('http://') && !url.startsWith('https://')) {
+                    resultTitle.textContent = '✗ 無効なURL';
+                    resultDescription.textContent = 'http(s)で始まるURLをコピーしてください';
+                    result.classList.remove('success');
+                    result.classList.add('error');
+                    result.style.display = 'block';
+                    return;
+                }
+
+                // URLを入力欄に設定して送信
+                urlInput.value = url;
+                await new Promise(resolve => {
+                    setTimeout(() => submitUrl(), 100);
+                    setTimeout(resolve, 1000);
+                });
+            } catch (err) {
+                resultTitle.textContent = '✗ クリップボードエラー';
+                resultDescription.textContent = 'クリップボードを読み取れません';
+                result.classList.remove('success');
+                result.classList.add('error');
+                result.style.display = 'block';
+            } finally {
+                clipboardBtn.disabled = false;
+                submitBtn.disabled = false;
+                loading.style.display = 'none';
+            }
+        }
+
+        function copyNumber() {
+            const number = resultNumber.textContent;
+            navigator.clipboard.writeText(number).then(() => {
+                copyBtn.textContent = '✓ コピーしました';
+                setTimeout(() => {
+                    copyBtn.textContent = 'コピー';
+                }, 2000);
+            }).catch(() => {
+                alert('コピーに失敗しました');
+            });
+        }
+
+        // URLを入力時にEnterで送信
+        urlInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
-                applyReservation();
+                submitUrl();
             }
         });
 
+        // 初期チェック
         window.addEventListener('load', () => {
-            checkReservations();
             checkStatus();
             setInterval(checkStatus, 2000);
         });
