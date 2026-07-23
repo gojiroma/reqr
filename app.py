@@ -104,13 +104,21 @@ def status(room_id):
 
 @app.route('/check_reservation/<room_id>')
 def check_reservation(room_id):
-    """このルームに予約が存在するか確認"""
+    """このルームに対応する予約が存在するか確認（改良版）
+    
+    入力者が待機中にコード生成を待つシーンで、
+    ポーリング中でも予約があるかチェックして即座にステータスを返す
+    """
     if room_id not in rooms:
-        return {'has_reservation': False}
+        return {'has_reservation': False, 'url': None}
+    
+    # ルームにURLがあればそれを返す（最優先）
+    if rooms[room_id].get('url'):
+        return {'has_reservation': True, 'url': rooms[room_id]['url'], 'ready': True}
     
     # 予約が存在するかどうかを返す
     has_reservation = len(reservations) > 0
-    return {'has_reservation': has_reservation}
+    return {'has_reservation': has_reservation, 'url': None, 'ready': False}
 
 @app.route('/<reservation_number>')
 def redirect_to_url(reservation_number):
