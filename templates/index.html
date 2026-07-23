@@ -843,7 +843,9 @@
 
         window.addEventListener('load', () => {
             checkStatus();
-            setInterval(checkStatus, 2000);
+            // ポーリング間隔を 2秒から 800ms に短縮し、
+            // 入力者が早期待機した場合でもリロード不要に改良
+            setInterval(checkStatus, 800);
         });
     </script>
 </body>
