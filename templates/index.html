@@ -71,9 +71,10 @@
             border-radius: 16px;
             border: 0.5px solid #f0ede8;
             width: 100%;
-            max-width: 520px;
+            max-width: 720px;
             overflow: hidden;
             animation: slideUp 0.5s ease-out;
+            padding: 18px;
         }
 
         @keyframes slideUp {
@@ -96,77 +97,27 @@
             }
         }
 
-        .tabs {
-            display: flex;
-            border-bottom: 0.5px solid #f0ede8;
-            background: rgba(255, 255, 255, 0.8);
+        /* New split layout */
+        .split-container {
+          display: flex;
+          gap: 20px;
+          align-items: stretch;
+          justify-content: space-between;
         }
 
-        .tab-btn {
-            flex: 1;
-            padding: 14px;
-            border: none;
-            background: transparent;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            color: #a89a8f;
-            transition: all 0.2s;
-            position: relative;
+        .panel {
+          flex: 1 1 0;
+          min-width: 0;
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
         }
 
-        .tab-btn:hover {
-            background: rgba(255, 255, 255, 0.5);
-        }
-
-        .tab-btn.active {
-            color: #8b7355;
-        }
-
-        .tab-btn.active::after {
-            content: '';
-            position: absolute;
-            bottom: -0.5px;
-            left: 0;
-            right: 0;
-            height: 1px;
-            background: #8b7355;
-        }
-
-        .tab-content {
-            padding: 24px;
-            display: none;
-            background: rgba(255, 255, 255, 0.3);
-        }
-
-        .tab-content.active {
-            display: block;
-            animation: fadeIn 0.3s ease-in;
-        }
-
-        .receive-section {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 16px;
-        }
-
-        .section-title {
-            font-size: 15px;
-            color: #5a5a5a;
-            text-align: center;
-            font-weight: 600;
-        }
-
-        .info-box {
-            width: 100%;
-            background: rgba(250, 248, 246, 0.5);
-            padding: 10px;
-            border-radius: 6px;
-            border-left: 1px solid #c9b8a8;
-            font-size: 12px;
-            color: #6b6b6b;
-            line-height: 1.4;
+        .panel .panel-inner {
+          background: rgba(255,255,255,0.6);
+          padding: 12px;
+          border-radius: 12px;
+          border: 0.5px solid #e8e4df;
         }
 
         .qr-code-area {
@@ -427,6 +378,12 @@
             }
         }
 
+        @media (max-width: 760px) {
+          .split-container {
+            flex-direction: column;
+          }
+        }
+
         @media (max-width: 480px) {
             .container {
                 padding: 5px;
@@ -438,15 +395,6 @@
 
             .app-title {
                 font-size: 24px;
-            }
-
-            .tab-btn {
-                padding: 12px;
-                font-size: 13px;
-            }
-
-            .tab-content {
-                padding: 16px 12px;
             }
 
             .card {
@@ -486,57 +434,59 @@
     <div class="container">
         <div class="header">
             <div class="app-title">reqr</div>
-            <div class="app-description">URLを瞬時に共有。QRコードや4桁コードでスマートに受け渡し。</div>
+            <div id="appDescription" class="app-description">URLを瞬時に共有。QRコードや4桁コードでスマートに受け渡し。</div>
         </div>
 
         <div class="card">
-            <div class="tabs">
-                <button class="tab-btn active" onclick="switchTab('receive')" id="receiveTabBtn">📲 <span id="tabReceive">受信</span></button>
-                <button class="tab-btn" onclick="switchTab('send')" id="sendTabBtn">📤 <span id="tabSend">送信</span></button>
-            </div>
-
-            <div class="tab-content active" id="receive-tab">
+          <div class="split-container">
+            <!-- Receive panel -->
+            <section class="panel receive-panel">
+              <div class="panel-inner">
                 <div class="receive-section">
-                    <div class="qr-code-area">
-                        <img src="data:image/png;base64,{{ qr_code }}" alt="QR Code">
-                    </div>
+                  <div class="qr-code-area">
+                    <img src="data:image/png;base64,{{ qr_code }}" alt="QR Code">
+                  </div>
 
-                    <div class="divider" id="dividerText">または</div>
+                  <div class="divider" id="dividerText">または</div>
 
-                    <div class="code-input-group">
-                        <p id="codeInputLabel">4桁のコードを入力</p>
-                        <input type="text" id="reservationNumber" placeholder="0000" maxlength="4" pattern="[0-9]*"
-                            inputmode="numeric" onkeyup="handleReservationInput(event)">
-                        <div class="status-message" id="reservationStatus"></div>
-                    </div>
+                  <div class="code-input-group">
+                    <p id="codeInputLabel">4桁のコードを入力</p>
+                    <input type="text" id="reservationNumber" placeholder="0000" maxlength="4" pattern="[0-9]*" inputmode="numeric" onkeyup="handleReservationInput(event)">
+                    <div class="status-message" id="reservationStatus"></div>
+                  </div>
                 </div>
-            </div>
+              </div>
+            </section>
 
-            <div class="tab-content" id="send-tab">
+            <!-- Send panel -->
+            <section class="panel send-panel">
+              <div class="panel-inner">
                 <div class="send-section">
-                    <div class="url-input-group">
-                        <label for="urlInput" id="urlLabel">URL</label>
-                        <input type="url" id="urlInput" placeholder="https://example.com" required autocomplete="off">
-                    </div>
+                  <div class="url-input-group">
+                    <label for="urlInput" id="urlLabel">URL</label>
+                    <input type="url" id="urlInput" placeholder="https://example.com" required autocomplete="off">
+                  </div>
 
-                    <div class="loading" id="loading">
-                        <div class="spinner"></div>
-                        <p style="margin-top: 8px; color: #666; font-size: 12px;" id="generatingText">生成中...</p>
-                    </div>
+                  <div class="loading" id="loading" style="display:none;">
+                    <div class="spinner"></div>
+                    <p style="margin-top: 8px; color: #666; font-size: 12px;" id="generatingText">生成中...</p>
+                  </div>
 
-                    <div class="button-group">
-                        <button class="btn btn-clipboard" id="clipboardBtn" onclick="sendFromClipboard()">📋 <span id="clipboardBtnText">クリップボードから</span></button>
-                        <button class="btn btn-primary" id="submitBtn" onclick="submitUrl()"><span id="submitBtnText">送信</span></button>
-                    </div>
+                  <div class="button-group">
+                    <button class="btn btn-clipboard" id="clipboardBtn" onclick="sendFromClipboard()">📋 <span id="clipboardBtnText">クリップボードから</span></button>
+                    <button class="btn btn-primary" id="submitBtn" onclick="submitUrl()"><span id="submitBtnText">送信</span></button>
+                  </div>
 
-                    <div class="result" id="result">
-                        <div class="result-title" id="resultTitle"></div>
-                        <div class="result-number" id="resultNumber"></div>
-                        <div class="result-description" id="resultDescription"></div>
-                        <button class="copy-btn" id="copyBtn" onclick="copyNumber()"><span id="copyBtnText">コピーする</span></button>
-                    </div>
+                  <div class="result" id="result" style="display:none;">
+                    <div class="result-title" id="resultTitle"></div>
+                    <div class="result-number" id="resultNumber"></div>
+                    <div class="result-description" id="resultDescription"></div>
+                    <button class="copy-btn" id="copyBtn" onclick="copyNumber()"><span id="copyBtnText">コピーする</span></button>
+                  </div>
                 </div>
-            </div>
+              </div>
+            </section>
+          </div>
         </div>
     </div>
 
@@ -546,8 +496,6 @@
         const translations = {
             ja: {
                 appDesc: 'URLを瞬時に共有。QRコードや4桁コードでスマートに受け渡し。',
-                tabReceive: '受信',
-                tabSend: '送信',
                 dividerText: 'または',
                 codeInputLabel: '4桁のコードを入力',
                 urlLabel: 'URL',
@@ -576,8 +524,6 @@
             },
             en: {
                 appDesc: 'Share URLs instantly using a QR code or 4-digit code.',
-                tabReceive: 'Receive',
-                tabSend: 'Send',
                 dividerText: 'or',
                 codeInputLabel: 'Enter 4-digit code',
                 urlLabel: 'URL',
@@ -611,15 +557,22 @@
         }
 
         function updateTranslations() {
-            document.getElementById('tabReceive').textContent = t('tabReceive');
-            document.getElementById('tabSend').textContent = t('tabSend');
-            document.getElementById('dividerText').textContent = t('dividerText');
-            document.getElementById('codeInputLabel').textContent = t('codeInputLabel');
-            document.getElementById('urlLabel').textContent = t('urlLabel');
-            document.getElementById('generatingText').textContent = t('generatingText');
-            document.getElementById('clipboardBtnText').textContent = t('clipboardBtnText');
-            document.getElementById('submitBtnText').textContent = t('submitBtnText');
-            document.getElementById('copyBtnText').textContent = t('copyBtnText');
+            const appDescEl = document.getElementById('appDescription');
+            if (appDescEl) appDescEl.textContent = t('appDesc');
+            const dividerEl = document.getElementById('dividerText');
+            if (dividerEl) dividerEl.textContent = t('dividerText');
+            const codeLabel = document.getElementById('codeInputLabel');
+            if (codeLabel) codeLabel.textContent = t('codeInputLabel');
+            const urlLabel = document.getElementById('urlLabel');
+            if (urlLabel) urlLabel.textContent = t('urlLabel');
+            const genText = document.getElementById('generatingText');
+            if (genText) genText.textContent = t('generatingText');
+            const clipboardBtnText = document.getElementById('clipboardBtnText');
+            if (clipboardBtnText) clipboardBtnText.textContent = t('clipboardBtnText');
+            const submitBtnText = document.getElementById('submitBtnText');
+            if (submitBtnText) submitBtnText.textContent = t('submitBtnText');
+            const copyBtnText = document.getElementById('copyBtnText');
+            if (copyBtnText) copyBtnText.textContent = t('copyBtnText');
         }
 
         updateTranslations();
@@ -636,18 +589,6 @@
         const resultDescription = document.getElementById('resultDescription');
         const loading = document.getElementById('loading');
         const copyBtn = document.getElementById('copyBtn');
-
-        function switchTab(tab) {
-            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-
-            document.getElementById(tab + 'TabBtn').classList.add('active');
-            document.getElementById(tab + '-tab').classList.add('active');
-
-            if (tab === 'send') {
-                setTimeout(() => document.getElementById('urlInput').focus(), 100);
-            }
-        }
 
         async function checkStatus() {
             try {
@@ -843,8 +784,7 @@
 
         window.addEventListener('load', () => {
             checkStatus();
-            // ポーリング間隔を 2秒から 800ms に短縮し、
-            // 入力者が早期待機した場合でもリロード不要に改良
+            // ポーリング間隔を 800ms に短縮
             setInterval(checkStatus, 800);
         });
     </script>
