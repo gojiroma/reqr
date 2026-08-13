@@ -3,27 +3,19 @@ import qrcode
 import qrcode.image.pil
 import io
 import base64
+import os
 import uuid
-import random
-import string
+
+import db
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'your_secret_key_here'
-
-# 一時的なルームを管理
-rooms = {}
-# 予約を管理（予約番号 -> URL）
-reservations = {}
-
-def generate_reservation_number():
-    """4桁のランダムな数字を生成"""
-    return ''.join(random.choices(string.digits, k=4))
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'your_secret_key_here')
 
 @app.route('/')
 def index():
     # 一意のルームIDを生成
     room_id = str(uuid.uuid4())
-    rooms[room_id] = {"url": None, "connected": False, "reservation_number": None}
+    db.create_room(room_id)
 
     # QRコードを生成（ルームIDを含むURL）
     qr = qrcode.QRCode(
@@ -47,17 +39,11 @@ def index():
 def scan(room_id):
     return render_template('scan.html', room_id=room_id)
 
-@app.route('/send')
-def send():
-    """URLを入力して予約番号を取得するページ"""
-    return render_template('send.html')
-
 @app.route('/submit', methods=['POST'])
 def submit_url():
     room_id = request.form.get('room_id')
     url = request.form.get('url')
-    if room_id in rooms and url:
-        rooms[room_id]['url'] = url
+    if room_id and url and db.set_room_url(room_id, url):
         return {'ok': True}, 200
     return {'error': 'invalid room or url'}, 400
 
@@ -69,14 +55,11 @@ def create_reservation():
     
     if not url:
         return {'error': 'URL is required'}, 400
-    
-    # 一意の予約番号が生成されるまでループ
-    while True:
-        reservation_number = generate_reservation_number()
-        if reservation_number not in reservations:
-            break
-    
-    reservations[reservation_number] = url
+
+    reservation_number = db.create_reservation(url)
+    if not reservation_number:
+        return {'error': 'could not allocate a code'}, 503
+
     return {'reservation_number': reservation_number, 'ok': True}, 200
 
 @app.route('/apply_reservation', methods=['POST'])
@@ -86,20 +69,19 @@ def apply_reservation():
     room_id = data.get('room_id')
     reservation_number = data.get('reservation_number')
     
-    if room_id not in rooms or reservation_number not in reservations:
+    if not room_id or not reservation_number:
         return {'error': 'Invalid room or reservation'}, 400
-    
-    url = reservations[reservation_number]
-    rooms[room_id]['url'] = url
-    rooms[room_id]['reservation_number'] = reservation_number
-    del reservations[reservation_number]
-    
+
+    if not db.apply_reservation(room_id, reservation_number):
+        return {'error': 'Invalid room or reservation'}, 400
+
     return {'ok': True}, 200
 
 @app.route('/status/<room_id>')
 def status(room_id):
-    if room_id in rooms and rooms[room_id].get('url'):
-        return {'url': rooms[room_id]['url']}
+    room = db.get_room(room_id)
+    if room and room.get('url'):
+        return {'url': room['url']}
     return {'url': None}
 
 @app.route('/check_reservation/<room_id>')
@@ -109,24 +91,23 @@ def check_reservation(room_id):
     入力者が待機中にコード生成を待つシーンで、
     ポーリング中でも予約があるかチェックして即座にステータスを返す
     """
-    if room_id not in rooms:
+    room = db.get_room(room_id)
+    if room is None:
         return {'has_reservation': False, 'url': None}
-    
+
     # ルームにURLがあればそれを返す（最優先）
-    if rooms[room_id].get('url'):
-        return {'has_reservation': True, 'url': rooms[room_id]['url'], 'ready': True}
-    
+    if room.get('url'):
+        return {'has_reservation': True, 'url': room['url'], 'ready': True}
+
     # 予約が存在するかどうかを返す
-    has_reservation = len(reservations) > 0
-    return {'has_reservation': has_reservation, 'url': None, 'ready': False}
+    return {'has_reservation': db.has_pending_reservation(), 'url': None, 'ready': False}
 
 @app.route('/<reservation_number>')
 def redirect_to_url(reservation_number):
     """4桁のコードを指定して直接リダイレクト、存在しない場合はエラー画面"""
     if len(reservation_number) == 4 and reservation_number.isdigit():
-        if reservation_number in reservations:
-            url = reservations[reservation_number]
-            del reservations[reservation_number]
+        url = db.take_reservation(reservation_number)
+        if url:
             return redirect(url)
         else:
             return render_template('invalid_code.html', code=reservation_number)
