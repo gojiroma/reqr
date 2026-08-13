@@ -57,47 +57,47 @@
         }
 
         .error-icon {
-            font-size: 48px;
+            font-size: 64px;
             margin-bottom: 20px;
             color: #c85a54;
         }
 
         .title {
-            font-size: 22px;
-            font-weight: 700;
+            font-size: 30px;
+            font-weight: 800;
             color: #8b7355;
-            margin-bottom: 16px;
+            margin-bottom: 20px;
         }
 
         .code-display {
             display: inline-block;
-            font-size: 32px;
-            font-weight: bold;
-            letter-spacing: 4px;
+            font-size: 52px;
+            font-weight: 800;
+            letter-spacing: 8px;
             font-family: 'Monaco', 'Courier New', monospace;
             background: #faf8f6;
-            border: 2px dashed #c85a54;
-            padding: 10px 24px;
-            border-radius: 10px;
+            border: 3px dashed #c85a54;
+            padding: 14px 28px;
+            border-radius: 14px;
             color: #c85a54;
-            margin-bottom: 24px;
+            margin-bottom: 26px;
         }
 
         .message {
-            font-size: 14px;
+            font-size: 20px;
             color: #666;
-            line-height: 1.6;
+            line-height: 1.7;
             margin-bottom: 30px;
         }
 
         .btn {
             display: inline-block;
             width: 100%;
-            padding: 14px;
+            padding: 20px;
             border: none;
-            border-radius: 8px;
-            font-size: 15px;
-            font-weight: 600;
+            border-radius: 12px;
+            font-size: 21px;
+            font-weight: 800;
             cursor: pointer;
             text-decoration: none;
             transition: all 0.3s;
@@ -120,15 +120,15 @@
     <div class="container">
         <div class="card">
             <div class="error-icon">⚠️</div>
-            <div class="title" id="errorTitle">コードが見つかりません</div>
-            
+            <div class="title" id="errorTitle">この すうじ ないよ</div>
+
             <div class="code-display">{{ code }}</div>
-            
+
             <div class="message" id="errorMessage">
-                入力されたコードに該当するURLが見つかりません。共有相手にコードをもう一度送ってもらうか、入力したコードが正しいか確認してください。
+                もう つかわれたか、まちがってるみたい。あいてに もういちど すうじを おしえてもらってね。
             </div>
-            
-            <a href="/" class="btn" id="backBtn">トップページへ戻る</a>
+
+            <a href="/" class="btn" id="backBtn">さいしょに もどる</a>
         </div>
     </div>
 
@@ -137,16 +137,16 @@
 
         const translations = {
             ja: {
-                title: 'reqr - コードが見つかりません',
-                errorTitle: 'コードが見つかりません',
-                errorMessage: '入力されたコードに該当するURLが見つかりません。共有相手にコードをもう一度送ってもらうか、入力したコードが正しいか確認してください。',
-                backBtn: 'トップページへ戻る'
+                title: 'reqr - この すうじ ないよ',
+                errorTitle: 'この すうじ ないよ',
+                errorMessage: 'もう つかわれたか、まちがってるみたい。あいてに もういちど すうじを おしえてもらってね。',
+                backBtn: 'さいしょに もどる'
             },
             en: {
-                title: 'reqr - Code Not Found',
-                errorTitle: 'Code Not Found',
-                errorMessage: 'We couldn\'t find any active URL for this code. Please ask the sender to share the code again, or check if the code was entered correctly.',
-                backBtn: 'Back to Home'
+                title: 'reqr - No such numbers',
+                errorTitle: 'No such numbers',
+                errorMessage: 'These numbers were already used, or something was typed wrong. Ask your friend for the numbers again.',
+                backBtn: 'Go back to the start'
             }
         };
 

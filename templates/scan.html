@@ -4,17 +4,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>URL入力</title>
+    <title>reqr</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #faf8f6;
+            color: #3a3a3a;
+        }
+    </style>
 </head>
 
 <body>
     <div style="display: flex; justify-content: center; align-items: center; height: 100vh; padding: 16px;">
         <div style="width: 100%; max-width: 420px; text-align: center;">
             <button id="pasteSendBtn"
-                style="width: 100%; aspect-ratio: 1 / 1; border-radius: 50%; border: none; background: #007bff; color: #fff; font-size: 1.15rem; font-weight: bold; padding: 24px; box-shadow: 0 10px 30px rgba(0, 123, 255, 0.3); cursor: pointer; transition: all 0.3s ease; display: none;"
-                onmouseover="this.style.background='#0056b3'; this.style.boxShadow='0 15px 40px rgba(0, 123, 255, 0.4)';"
-                onmouseout="this.style.background='#007bff'; this.style.boxShadow='0 10px 30px rgba(0, 123, 255, 0.3)';">
-                貼り付けて送信
+                style="width: 100%; aspect-ratio: 1 / 1; border-radius: 50%; border: none; background: #a89a8f; color: #fff; font-size: 2rem; font-weight: 800; padding: 24px; box-shadow: 0 10px 30px rgba(139, 115, 85, 0.3); cursor: pointer; transition: all 0.3s ease; display: none;"
+                onmouseover="this.style.background='#8b7355';"
+                onmouseout="this.style.background='#a89a8f';">
+                はりつけて おくる
             </button>
             <p id="statusMessage" style="margin-top: 20px; font-size: 3rem; color: #333; line-height: 1.5; font-weight: bold;"></p>
         </div>
@@ -28,26 +36,26 @@
         const isJapanese = navigator.language.startsWith('ja');
         const messages = {
             ja: {
-                loading: '読み込み中...',
-                success: '✓ 送信完了',
-                failed: '✗ 送信に失敗しました',
-                networkError: '✗ 通信エラー',
-                notFound: '✗ URLが見つかりません',
-                clipboardError: '✗ 読み取り失敗',
-                copyPrompt: 'URLをコピーして\n再度お試しください',
-                invalidUrl: '✗ 無効なURL形式\nhttp(s)から始まるURLを\nコピーしてください',
-                manualPaste: '貼り付けて送信',
-                sent: '送信済み'
+                loading: 'まってね…',
+                success: '✓ おくれたよ！',
+                failed: '✗ おくれなかった',
+                networkError: '✗ つながらないよ',
+                notFound: '✗ リンクが ないよ',
+                clipboardError: '✗ よみとれなかった',
+                copyPrompt: 'リンクを コピーしてから\nもういちど おしてね',
+                invalidUrl: '✗ それ リンクじゃないよ\nhttp で はじまる やつを\nコピーしてね',
+                manualPaste: 'はりつけて おくる',
+                sent: 'おくったよ'
             },
             en: {
-                loading: 'Loading...',
-                success: '✓ Sent successfully',
-                failed: '✗ Failed to send',
-                networkError: '✗ Network error',
-                notFound: '✗ URL not found',
-                clipboardError: '✗ Clipboard error',
-                copyPrompt: 'Copy URL and\ntry again',
-                invalidUrl: '✗ Invalid URL format\nCopy a URL starting\nwith http(s)',
+                loading: 'One sec…',
+                success: '✓ Sent it!',
+                failed: '✗ Could not send',
+                networkError: "✗ Can't connect",
+                notFound: '✗ No link found',
+                clipboardError: "✗ Couldn't read it",
+                copyPrompt: 'Copy a link, then\npress this again',
+                invalidUrl: "✗ That's not a link\nCopy something starting\nwith http",
                 manualPaste: 'Paste and send',
                 sent: 'Sent'
             }
